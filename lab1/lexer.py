@@ -129,7 +129,7 @@ def add_if_is_operator():
 
 
 def can_add_comment():
-    global end_pos_of_token, current_column
+    global end_pos_of_token, current_column, current_row
     end_pos_of_token = start_pos_of_token + 1
 
     if code[end_pos_of_token] == "/":
@@ -139,14 +139,23 @@ def can_add_comment():
         return True
     elif code[end_pos_of_token] == "*":
         end_pos_of_token += 1
+
+        current_column_local = current_column
+        current_row_local = current_row
+
         while code[end_pos_of_token] != "*" and code[end_pos_of_token + 1] != "/":
-            current_column += 1
+            current_column_local += 1
             if code[end_pos_of_token] == "\n":
-                current_row += 1
-                current_column = 1
+                current_row_local += 1
+                current_column_local = 1
             end_pos_of_token += 1
+
         end_pos_of_token += 2
+        current_column_local += 2
+
         add_token(TokenType.COMMENT)
+        current_column = current_column_local
+        current_row = current_row_local
         return True
     return False
 
