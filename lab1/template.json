@@ -1,0 +1,30 @@
+{
+  "tabs_and_indents": {
+    "tab_size": 4,
+    "indent": 4,
+    "configuration_indent": 8,
+    "keep_indents_on_empty_lines": false,
+    "label_indent": 0,
+    "absolute_label_indent": false
+  },
+  "spaces": {
+    "before_parentheses":{
+      "method_declaration": false,
+      "method_call": false,
+      "if": true,
+      "for": true,
+      "while": true,
+      "switch": true,
+      "try": true,
+      "catch": true,
+      "synchronized": true
+    },
+    "around_operators":{
+
+    },
+    "before_left_brace": {
+      "class": true,
+      "method": true
+    }
+  }
+}
