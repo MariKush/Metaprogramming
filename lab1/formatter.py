@@ -12,6 +12,7 @@ class Formatter:
     indent = None
     spaces_around_unary_operator = None
     spaces_around_additive_operator = None
+    spaces_around_relational_operator = None
 
     def add_template_for_around_operators(self, spaces_around_operators):
         if spaces_around_operators['assignment']:
@@ -25,6 +26,7 @@ class Formatter:
 
         if spaces_around_operators['relational']:
             self.around_operators.extend(["<=", ">="])  # TODO ">" and "<"
+        self.spaces_around_relational_operator = spaces_around_operators['relational']
 
         if spaces_around_operators['bitwise']:
             self.around_operators.extend(["&", "|", "^"])
@@ -80,6 +82,12 @@ class Formatter:
             index -= 1
         return index
 
+    def find_next_significant_token_index(self, index):
+        index += 1
+        while self.all_tokens[index].token_type == TokenType.WHITE_SPACE and index + 1 < len(self.all_tokens):
+            index += 1
+        return index
+
 
     def add_spaces_before_parentheses(self):
         selected_keywords = []
@@ -123,6 +131,33 @@ class Formatter:
                         self.add_white_space(current_token_index + 2)
                         current_token_index += 2
             current_token_index += 1
+
+        # for template
+        number_open_brackets = 0
+        current_token_index = 0
+        while current_token_index < len(self.all_tokens):
+            if self.all_tokens[current_token_index].token_value == '<':
+                token_value = self.all_tokens[self.find_next_significant_token_index(current_token_index)].token_value
+                if token_value[0].isalpha() and token_value[0].isupper():
+                    number_open_brackets += 1
+                    # TODO for template
+                    pass
+                else:
+                    if self.spaces_around_relational_operator:
+                        self.add_white_space(current_token_index)
+                        self.add_white_space(current_token_index + 2)
+                        current_token_index += 2
+            elif self.all_tokens[current_token_index].token_value == '>':
+                if number_open_brackets > 0:
+                    number_open_brackets -= 1
+                    # TODO for template
+                else:
+                    if self.spaces_around_relational_operator:
+                        self.add_white_space(current_token_index)
+                        self.add_white_space(current_token_index + 2)
+                        current_token_index += 2
+            current_token_index += 1
+
 
     def add_spaces(self):
         self.add_spaces_before_parentheses()
