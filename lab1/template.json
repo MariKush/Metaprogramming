@@ -9,8 +9,6 @@
   },
   "spaces": {
     "before_parentheses":{
-      "method_declaration": false,
-      "method_call": false,
       "if": true,
       "for": true,
       "while": true,
@@ -20,6 +18,17 @@
       "synchronized": true
     },
     "around_operators":{
+      "assignment": true,
+      "logical": true,
+      "equality": true,
+      "relational": true,
+      "bitwise": true,
+      "additive": true,
+      "multiplicative": true,
+      "shift": true,
+      "unary": false,
+      "lambda": true,
+      "method_reference": false
 
     },
     "before_left_brace": {
