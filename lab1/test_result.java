@@ -14,7 +14,7 @@ BitArray[]blocks = newBitArray[8];
 for (inti = 0;i<8;i++){//com2
 blocks[i] = newBitArray(6);
 for (intj = 0;j<6;j++){
-blocks[i].set(j,E.get(i * 6+j));
+blocks[i].set(j,E.get(i * 6 + j));
 }
 }
 returnblocks;
@@ -49,11 +49,11 @@ extendBlock = xor(extendBlock,key);
 BitArray[]blocks = splitBlock(extendBlock);
 BitArraytempRes = newBitArray(32);
 for (inti = 0;i<8;i++){
-inta = toInt(blocks[i].get(0)) * 2+toInt(blocks[i].get(5));
-intb = toInt(blocks[i].get(1)) * 8+toInt(blocks[i].get(2)) * 4+toInt(blocks[i].get(3)) * 2+toInt(blocks[i].get(4));
+inta = toInt(blocks[i].get(0)) * 2 + toInt(blocks[i].get(5));
+intb = toInt(blocks[i].get(1)) * 8 + toInt(blocks[i].get(2)) * 4 + toInt(blocks[i].get(3)) * 2 + toInt(blocks[i].get(4));
 intc = blockTransformationTables[i][a][b];
 for (intj = 3;j >= 0;j--){
-tempRes.set(i * 4+j,(c % 2 == 1));
+tempRes.set(i * 4 + j,(c % 2 == 1));
 c = c / 2;
 }
 
@@ -72,7 +72,7 @@ R = newBitArray(32),
 temp,f;
 for (inti = 0;i<32;i++){
 L.set(i,input.get(i));
-R.set(i,input.get(i+32));
+R.set(i,input.get(i + 32));
 }
 
 for (inti = 0;i<16;i++){
@@ -85,7 +85,7 @@ L = temp;
 
 for (inti = 0;i<32;i++){
 output.set(i,L.get(i));
-output.set(i+32,R.get(i));
+output.set(i + 32,R.get(i));
 }
 
 returnoutput;
@@ -124,7 +124,7 @@ arr = replaseS(arr);
 arr = feistelEncrypt(arr,key);
 arr = replaseB(arr);
 
-arr = xor(arr,newBitArray(64,input.substring(i * 8,(i+1) * 8).getBytes()));
+arr = xor(arr,newBitArray(64,input.substring(i * 8,(i + 1) * 8).getBytes()));
 
 output = output.concat(newString(arr.toByteArray()));
 
@@ -150,7 +150,7 @@ arr = replaseS(arr);
 arr = feistelEncrypt(arr,key);
 arr = replaseB(arr);
 
-BitArraycurrEncryptedBlock = newBitArray(64,input.substring((i) * 8,(i+1) * 8).getBytes());
+BitArraycurrEncryptedBlock = newBitArray(64,input.substring((i) * 8,(i + 1) * 8).getBytes());
 arr = xor(currEncryptedBlock,arr);
 
 result = result.concat(newString(arr.toByteArray()));
