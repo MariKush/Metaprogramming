@@ -216,10 +216,26 @@ class Formatter:
 
         self.add_spaces_before_class_and_method_left_brace()
 
+    def add_spaces_before_keywords(self):
+        selected_keywords = []
+        json_before_keywords = self.template_data['spaces']['before_keyword']
+        for key in json_before_keywords:
+            if json_before_keywords[key]:
+                selected_keywords.append(key)
+
+        current_token_index = 0
+        while current_token_index + 1 < len(self.all_tokens):
+            if self.all_tokens[current_token_index].token_value in selected_keywords and \
+                    self.all_tokens[current_token_index - 1].token_value == "}":
+                self.add_white_space(current_token_index)
+                current_token_index += 1
+            current_token_index += 1
+
     def add_spaces(self):
         self.add_spaces_before_parentheses()
         self.add_spaces_around_operators()
         self.add_spaces_before_left_brace()
+        self.add_spaces_before_keywords()
 
     def formatting(self):
         self.remove_all_spaces_and_tabs()

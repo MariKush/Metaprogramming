@@ -44,6 +44,12 @@
       "catch": true,
       "finally": true,
       "synchronized": true
+    },
+    "before_keyword": {
+      "else": true,
+      "while": true,
+      "catch": true,
+      "finally": true
     }
   }
 }

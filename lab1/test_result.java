@@ -182,15 +182,15 @@ if (0 < x && x < 10) {
 while (x != y) {
 x = f(x * 3 + ++5);
 }
-}else {
+} else {
 synchronized (this) {
 switch (e.getCode()) {
 //...
 }
 }
 }
-}catch (MyExceptione) {
-}finally {
+} catch (MyExceptione) {
+} finally {
 int[]arr = (int[])g(y);
 x = y >= 0?arr[y]:-1;
 Map<String,String>sMap = newHashMap<String,String>();
