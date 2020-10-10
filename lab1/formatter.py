@@ -291,15 +291,30 @@ class Formatter:
                                 self.add_white_space(current_token_index + 1)
                             if json_other['before_for_semicolon']:
                                 self.add_white_space(current_token_index)
+                                current_token_index += 1
+                        if self.all_tokens[current_token_index].token_value == ":":
+                            if json_other['after_colon_in_foreach']:
+                                self.add_white_space(current_token_index + 1)
+                            if json_other['before_colon_in_foreach']:
+                                self.add_white_space(current_token_index)
+                                current_token_index += 1
                         current_token_index += 1
             current_token_index += 1
 
-
-
-
-            current_token_index += 1
-
-
+        if json_other['after_type_cast']:
+            current_token_index = 0
+            while current_token_index + 1 < len(self.all_tokens):
+                if self.all_tokens[current_token_index].token_value == '(':
+                    current_token_index += 1
+                    if self.all_tokens[current_token_index].token_type in [TokenType.NUMBER_OR_IDENTIFIERS,
+                                                                           TokenType.KEYWORD]:
+                        current_token_index += 1
+                        if self.all_tokens[current_token_index].token_value == '[':
+                            current_token_index += 2
+                            if self.all_tokens[current_token_index].token_value == ')':
+                                self.add_white_space(current_token_index + 1)
+                                current_token_index += 1
+                current_token_index += 1
 
     def add_spaces(self):
         self.add_spaces_before_parentheses()

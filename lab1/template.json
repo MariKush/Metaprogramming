@@ -62,9 +62,9 @@
       "before_comma": false,
       "after_for_semicolon": true,
       "before_for_semicolon": false,
-      "after_type_cast": true,
+      "after_colon_in_foreach": true,
       "before_colon_in_foreach": true,
-      "after_colon_in_foreach": true
+      "after_type_cast": true
     }
   }
 }
