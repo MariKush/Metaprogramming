@@ -5,41 +5,41 @@ importstaticorg.Masha.Helper. * ;
 /*
     wwwwww
 */intx;
-publicclassDES{
+publicclassDES {
 
 //comment
-privateBitArray[]splitBlock(BitArrayE){
+privateBitArray[]splitBlock(BitArrayE) {
 BitArray[]blocks = newBitArray[8];
 
 for (inti = 0;i < 8;i++) {//com2
 blocks[i] = newBitArray(6);
-for (intj = 0;j < 6;j++) {
+for (intj = 0;j < 6;j++)  {
 blocks[i].set(j,E.get(i * 6 + j));
 }
 }
 returnblocks;
 }
 
-privateBitArrayextendBlock(BitArrayR){
+privateBitArrayextendBlock(BitArrayR) {
 BitArrayE = newBitArray(48);
-for (inti = 0;i < 48;i++) {
+for (inti = 0;i < 48;i++)  {
 E.set(i,R.get(extensionTable[i]));
 }
 returnE;
 }
 
-privateBitArrayxor(BitArraya,BitArrayb){
+privateBitArrayxor(BitArraya,BitArrayb) {
 if (a.length() != b.length())thrownewIllegalArgumentException("input has no same size");
 
 BitArrayresult = newBitArray(b.length());
-for (inti = 0;i < a.length();i++) {
+for (inti = 0;i < a.length();i++)  {
 result.set(i,a.get(i) ^ b.get(i));
 }
 returnresult;
 }
 
 
-privateBitArrayfeistelHelper(BitArrayR,BitArraykey){
+privateBitArrayfeistelHelper(BitArrayR,BitArraykey) {
 BitArrayresult = newBitArray(32);
 
 BitArrayextendBlock = extendBlock(R);
@@ -48,11 +48,11 @@ extendBlock = xor(extendBlock,key);
 
 BitArray[]blocks = splitBlock(extendBlock);
 BitArraytempRes = newBitArray(32);
-for (inti = 0;i < 8;i++) {
+for (inti = 0;i < 8;i++)  {
 inta = toInt(blocks[i].get(0)) * 2 + toInt(blocks[i].get(5));
 intb = toInt(blocks[i].get(1)) * 8 + toInt(blocks[i].get(2)) * 4 + toInt(blocks[i].get(3)) * 2 + toInt(blocks[i].get(4));
 intc = blockTransformationTables[i][a][b];
-for (intj = 3;j >= 0;j--) {
+for (intj = 3;j >= 0;j--)  {
 tempRes.set(i * 4 + j,(c % 2 == 1));
 c = c / 2;
 }
@@ -65,12 +65,12 @@ returnresult;
 }
 
 
-privateBitArrayfeistelEncrypt(BitArrayinput,Keykey){
+privateBitArrayfeistelEncrypt(BitArrayinput,Keykey) {
 BitArrayoutput = newBitArray(64),
 L = newBitArray(32),
 R = newBitArray(32),
 temp,f;
-for (inti = 0;i < 32;i++) {
+for (inti = 0;i < 32;i++)  {
 L.set(i,input.get(i));
 R.set(i,input.get(i + 32));
 }
@@ -91,33 +91,33 @@ output.set(i + 32,R.get(i));
 returnoutput;
 }
 
-privateBitArrayreplaseS(BitArrayinput){
+privateBitArrayreplaseS(BitArrayinput) {
 BitArrayoutput = newBitArray(input.length());
-for (inti = 0;i < 64;i++) {
+for (inti = 0;i < 64;i++)  {
 output.set(i,input.get(replaseTable1[i]));
 }
 returnoutput;
 }
 
-privateBitArrayreplaseB(BitArrayinput){
+privateBitArrayreplaseB(BitArrayinput) {
 BitArrayoutput = newBitArray(input.length());
-for (inti = 0;i < 64;i++) {
+for (inti = 0;i < 64;i++)  {
 output.set(replaseTable1[i],input.get(i));
 }
 returnoutput;
 }
 
-publicStringencrypt(Stringinput,StringkeyS,StringinitStr){
+publicStringencrypt(Stringinput,StringkeyS,StringinitStr) {
 Keykey = newKey(keyS);
 
-while (input.length() % 8 != 0) {
+while (input.length() % 8 != 0)  {
 input = input.concat(String.valueOf('\0'));
 }
 Stringoutput = "";
 
 BitArraypreviousEncryptedBlock = newBitArray(64,initStr.getBytes());
 
-for (inti = 0;i < input.length() / 8;i++) {
+for (inti = 0;i < input.length() / 8;i++)  {
 BitArrayarr = previousEncryptedBlock;
 
 arr = replaseS(arr);
@@ -134,7 +134,7 @@ previousEncryptedBlock = arr;
 returnoutput;
 }
 
-publicStringdecrypt(Stringinput,StringkeyS,StringinitStr){
+publicStringdecrypt(Stringinput,StringkeyS,StringinitStr) {
 if (input.length() % 8 != 0) {
 thrownewIllegalArgumentException("input has incorrect size");
 }
@@ -143,7 +143,7 @@ Stringresult = "";
 
 BitArraypreviousEncryptedBlock = newBitArray(64,initStr.getBytes());
 
-for (inti = 0;i < input.length() / 8;i++) {
+for (inti = 0;i < input.length() / 8;i++)  {
 BitArrayarr = previousEncryptedBlock;
 
 arr = replaseS(arr);
@@ -164,12 +164,12 @@ returnresult.replace("\0","");
 }
 
 @Annotation(param1 = "value1",param2 = "value2")
-@SuppressWarnings({"ALL"})
-publicclassFoo<TextendsBar & Abba,U>{
+@SuppressWarnings( {"ALL"})
+publicclassFoo<TextendsBar & Abba,U> {
 int[]X = newint[]{1,3,5,6,7,87,1213,2};
 int[]empty = newint[]{};
 
-publicvoidfoo(intx,inty){
+publicvoidfoo(intx,inty) {
 Runnabler = () -> {
 };
 Runnabler1 = this::bar;
@@ -200,15 +200,15 @@ Bar.<String,Integer>mess(null);
 while (true);
 }
 
-voidbar(){
+voidbar() {
 {
 return;
 }
 }
 }
 
-classBar{
-static<U,T>Umess(Tt){
+classBar {
+static<U,T>Umess(Tt) {
 returnnull;
 }
 }

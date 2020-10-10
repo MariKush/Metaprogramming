@@ -154,6 +154,31 @@ class Formatter:
                         current_token_index += 2
             current_token_index += 1
 
+    def add_spaces_before_class_and_method_left_brace(self):
+        spaces_before_class_left_brace = self.template_data['spaces']['before_left_brace']['class']
+        spaces_before_method_left_brace = self.template_data['spaces']['before_left_brace']['method']
+        current_token_index = 0
+        while current_token_index < len(self.all_tokens):
+            if self.all_tokens[current_token_index].token_value == 'class':
+                while self.all_tokens[current_token_index].token_value != '{':
+                    current_token_index += 1
+                if spaces_before_class_left_brace:
+                    self.add_white_space(current_token_index)
+                    current_token_index += 1
+
+            if self.all_tokens[current_token_index].token_type == TokenType.NUMBER_OR_IDENTIFIERS:
+                if self.all_tokens[current_token_index + 1].token_value == '(' and \
+                        (self.all_tokens[current_token_index - 1].token_type in [TokenType.KEYWORD,
+                                                                                 TokenType.NUMBER_OR_IDENTIFIERS] \
+                         or self.all_tokens[current_token_index - 1].token_value in ['>', ']']):
+                    if spaces_before_method_left_brace:
+                        while self.all_tokens[current_token_index].token_value != '{':
+                            current_token_index += 1
+                        self.add_white_space(current_token_index)
+                        current_token_index += 1
+
+            current_token_index += 1
+
     def add_spaces_before_left_brace(self):
         all_from_spaces_before_left_brace = []
         selected_keywords = []
@@ -189,7 +214,7 @@ class Formatter:
                     self.add_white_space(current_token_index)
             current_token_index += 1
 
-
+        self.add_spaces_before_class_and_method_left_brace()
 
     def add_spaces(self):
         self.add_spaces_before_parentheses()
