@@ -231,14 +231,90 @@ class Formatter:
                 current_token_index += 1
             current_token_index += 1
 
+    def add_spaces_in_ternary_operator(self):
+        json_in_ternary_operator = self.template_data['spaces']['in_ternary_operator']
+        current_token_index = 0
+
+        def get_column_index(local_current_token_index):
+            local_current_token_index += 1
+            i = 0
+            while i < 20 and local_current_token_index + 1 < len(self.all_tokens):
+                i += 1
+                if self.all_tokens[local_current_token_index].token_value == ':':
+                    return local_current_token_index
+                local_current_token_index += 1
+            return -1
+
+        while current_token_index + 1 < len(self.all_tokens):
+            if self.all_tokens[current_token_index].token_value == '?':
+                colon_index = get_column_index(current_token_index)
+                if colon_index > -1:
+                    if json_in_ternary_operator['after_colon']:
+                        self.add_white_space(colon_index + 1)
+                    if json_in_ternary_operator['before_colon']:
+                        self.add_white_space(colon_index)
+                    if json_in_ternary_operator['after_question_mark']:
+                        self.add_white_space(current_token_index + 1)
+                    if json_in_ternary_operator['before_question_mark']:
+                        self.add_white_space(current_token_index)
+                    current_token_index += 1
+            current_token_index += 1
+
+    def add_spaces_other(self):
+        json_other = self.template_data['spaces']['other']
+        current_token_index = 0
+        while current_token_index + 1 < len(self.all_tokens):
+            if self.all_tokens[current_token_index].token_value == ',':
+                if json_other['after_comma']:
+                    self.add_white_space(current_token_index + 1)
+                if json_other['before_comma']:
+                    self.add_white_space(current_token_index)
+            current_token_index += 1
+
+        current_token_index = 0
+        while current_token_index + 1 < len(self.all_tokens):
+            if self.all_tokens[current_token_index].token_value in ['for', 'try']:
+                number_of_open_parentheses = 0
+                current_token_index += 1
+                while self.all_tokens[current_token_index].token_value == ' ':
+                    current_token_index += 1
+                if self.all_tokens[current_token_index].token_value == "(":
+                    number_of_open_parentheses += 1
+                    current_token_index += 1
+                    while number_of_open_parentheses > 0:
+                        if self.all_tokens[current_token_index].token_value == "(":
+                            number_of_open_parentheses += 1
+                        if self.all_tokens[current_token_index].token_value == ")":
+                            number_of_open_parentheses -= 1
+                        if self.all_tokens[current_token_index].token_value == ";":
+                            if json_other['after_for_semicolon']:
+                                self.add_white_space(current_token_index + 1)
+                            if json_other['before_for_semicolon']:
+                                self.add_white_space(current_token_index)
+                        current_token_index += 1
+            current_token_index += 1
+
+
+
+
+            current_token_index += 1
+
+
+
     def add_spaces(self):
         self.add_spaces_before_parentheses()
         self.add_spaces_around_operators()
         self.add_spaces_before_left_brace()
         self.add_spaces_before_keywords()
+        self.add_spaces_in_ternary_operator()
+        self.add_spaces_other()
 
     def formatting(self):
         self.remove_all_spaces_and_tabs()
         # validate new lines
         # add tubs
         self.add_spaces()
+
+
+
+

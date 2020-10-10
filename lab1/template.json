@@ -50,6 +50,21 @@
       "while": true,
       "catch": true,
       "finally": true
+    },
+    "in_ternary_operator": {
+      "before_question_mark": true,
+      "after_question_mark": true,
+      "before_colon": true,
+      "after_colon": true
+    },
+    "other": {
+      "after_comma": true,
+      "before_comma": false,
+      "after_for_semicolon": true,
+      "before_for_semicolon": false,
+      "after_type_cast": true,
+      "before_colon_in_foreach": true,
+      "after_colon_in_foreach": true
     }
   }
 }
