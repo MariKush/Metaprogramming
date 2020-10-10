@@ -33,7 +33,17 @@
     },
     "before_left_brace": {
       "class": true,
-      "method": true
+      "method": true,
+      "if": true,
+      "else": true,
+      "for": true,
+      "while": true,
+      "do": true,
+      "switch": true,
+      "try": true,
+      "catch": true,
+      "finally": true,
+      "synchronized": true
     }
   }
 }

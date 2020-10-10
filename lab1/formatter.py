@@ -59,8 +59,6 @@ class Formatter:
         spaces_around_operators = self.template_data['spaces']['around_operators']
         self.add_template_for_around_operators(spaces_around_operators)
 
-
-
     def __init__(self, all_tokens, template_file_name="template.json"):
         self.load_template(template_file_name)
         self.all_tokens = all_tokens
@@ -88,7 +86,6 @@ class Formatter:
             index += 1
         return index
 
-
     def add_spaces_before_parentheses(self):
         selected_keywords = []
         json_before_parentheses = self.template_data['spaces']['before_parentheses']
@@ -103,7 +100,6 @@ class Formatter:
                 self.add_white_space(current_token_index + 1)
                 current_token_index += 1
             current_token_index += 1
-
 
     def add_spaces_around_operators(self):
         current_token_index = 0
@@ -158,10 +154,47 @@ class Formatter:
                         current_token_index += 2
             current_token_index += 1
 
+    def add_spaces_before_left_brace(self):
+        all_from_spaces_before_left_brace = []
+        selected_keywords = []
+        json_before_left_brace = self.template_data['spaces']['before_left_brace']
+        for key in json_before_left_brace:
+            all_from_spaces_before_left_brace.append(key)
+
+        for key in all_from_spaces_before_left_brace[2:]:
+            if json_before_left_brace[key]:
+                selected_keywords.append(key)
+
+        current_token_index = 0
+        while current_token_index + 1 < len(self.all_tokens):
+            if self.all_tokens[current_token_index].token_value in selected_keywords:
+                number_of_open_parentheses = 0
+                current_token_index += 1
+                while self.all_tokens[current_token_index].token_value == ' ':
+                    current_token_index += 1
+
+                if self.all_tokens[current_token_index].token_value == "(":
+                    number_of_open_parentheses += 1
+                    current_token_index += 1
+                while number_of_open_parentheses > 0:
+                    if self.all_tokens[current_token_index].token_value == "(":
+                        number_of_open_parentheses += 1
+                    elif self.all_tokens[current_token_index].token_value == ")":
+                        number_of_open_parentheses -= 1
+                    current_token_index += 1
+
+                while self.all_tokens[current_token_index].token_value == ' ':
+                    current_token_index += 1
+                if self.all_tokens[current_token_index].token_value == '{':
+                    self.add_white_space(current_token_index)
+            current_token_index += 1
+
+
 
     def add_spaces(self):
         self.add_spaces_before_parentheses()
         self.add_spaces_around_operators()
+        self.add_spaces_before_left_brace()
 
     def formatting(self):
         self.remove_all_spaces_and_tabs()
