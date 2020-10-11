@@ -453,3 +453,4 @@ class Formatter:
         self.remove_all_spaces_and_tabs()
         self.validate_new_lines_and_tabs()
         self.add_spaces()
+        return self.all_tokens

@@ -1,5 +1,9 @@
 from formatter import Formatter
 from lexer import tokenize
+from user_interface import console_interface
+
+console_interface()
+
 
 file = open("test.java")
 
