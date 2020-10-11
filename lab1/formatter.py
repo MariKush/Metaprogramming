@@ -25,7 +25,7 @@ class Formatter:
             self.around_operators.extend(["==", "!="])
 
         if spaces_around_operators['relational']:
-            self.around_operators.extend(["<=", ">="])  # TODO ">" and "<"
+            self.around_operators.extend(["<=", ">="])
         self.spaces_around_relational_operator = spaces_around_operators['relational']
 
         if spaces_around_operators['bitwise']:
@@ -136,7 +136,6 @@ class Formatter:
                 token_value = self.all_tokens[self.find_next_significant_token_index(current_token_index)].token_value
                 if token_value[0].isalpha() and token_value[0].isupper():
                     number_open_brackets += 1
-                    # TODO for template
                     pass
                 else:
                     if self.spaces_around_relational_operator:
@@ -146,7 +145,13 @@ class Formatter:
             elif self.all_tokens[current_token_index].token_value == '>':
                 if number_open_brackets > 0:
                     number_open_brackets -= 1
-                    # TODO for template
+                    if number_open_brackets == 0:
+                        current_token_index += 1
+                        if self.all_tokens[current_token_index].token_type == TokenType.NUMBER_OR_IDENTIFIERS:
+                            current_token_index += 1
+                            if self.all_tokens[current_token_index].token_value != '(':
+                                self.add_white_space(current_token_index - 1)
+                                current_token_index += 1
                 else:
                     if self.spaces_around_relational_operator:
                         self.add_white_space(current_token_index)
@@ -311,9 +316,10 @@ class Formatter:
                         current_token_index += 1
                         if self.all_tokens[current_token_index].token_value == '[':
                             current_token_index += 2
-                            if self.all_tokens[current_token_index].token_value == ')':
-                                self.add_white_space(current_token_index + 1)
-                                current_token_index += 1
+                        if self.all_tokens[current_token_index].token_value == ')' and \
+                                self.all_tokens[current_token_index + 1].token_type == TokenType.NUMBER_OR_IDENTIFIERS:
+                            self.add_white_space(current_token_index + 1)
+                            current_token_index += 1
                 current_token_index += 1
 
     def add_spaces(self):

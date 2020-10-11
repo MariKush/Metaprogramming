@@ -28,7 +28,7 @@ switch (e.getCode()) {
 } finally {
 int[]arr = (int[]) g(y);
 x = y >= 0 ? arr[y] : -1;
-Map<String, String>sMap = newHashMap<String, String>();
+Map<String, String> sMap = newHashMap<String, String>();
 Bar.<String, Integer>mess(null);
 }
 }
@@ -43,7 +43,7 @@ return;
 }
 
 classBar {
-static<U, T>Umess(Tt) {
+static<U, T> Umess(Tt) {
 returnnull;
 }
 }
@@ -58,6 +58,9 @@ int[]array = {51, 136, 387};
 
 for (inti : array) {
 System.out.println(i);
+}
+if (a < b) {
+println(a)
 }
 }
 }
