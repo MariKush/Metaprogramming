@@ -63,6 +63,9 @@ class Formatter:
         self.load_template(template_file_name)
         self.all_tokens = all_tokens
 
+    def add_new_line(self, position):
+        self.all_tokens.insert(position, Token(TokenType.WHITE_SPACE, "\n", None, None))
+
     def add_white_space(self, position):
         self.all_tokens.insert(position, Token(TokenType.WHITE_SPACE, " ", None, None))
 
@@ -85,6 +88,99 @@ class Formatter:
         while self.all_tokens[index].token_type == TokenType.WHITE_SPACE and index + 1 < len(self.all_tokens):
             index += 1
         return index
+
+    def add_new_line_if_necessary(self, current_token_index):
+        if self.all_tokens[current_token_index + 1].token_value != "\n":
+            self.add_new_line(current_token_index + 1)
+
+    def add_indent(self, current_token_index, indent):
+        for i in range(indent):
+            self.add_white_space(current_token_index)
+
+    def validate_new_lines_and_tabs(self):
+        current_token_index = 0
+        stack_influential_tokens = []
+        indent = 0
+        print(self.indent)
+        current_indent = 0  # if, for, while, do without "{}"
+        switch_indent = 0
+        was_new_line = False
+        while current_token_index + 1 < len(self.all_tokens):
+            current_token_value = self.all_tokens[current_token_index].token_value
+            current_token = self.all_tokens[current_token_index]
+
+            if was_new_line and not ("switch" in stack_influential_tokens and current_token_value in ["case", "default"]):
+                was_new_line = False
+                if current_token_value == "}":
+                    indent -= self.indent
+                self.add_indent(current_token_index, indent + current_indent + switch_indent)
+                current_token_index += indent + current_indent + switch_indent
+                current_indent = 0
+                if current_token_value == "}":
+                    indent += self.indent
+
+            if current_token_value == ";":
+                if not (len(stack_influential_tokens) != 0 and stack_influential_tokens[-1] == "("):
+                    self.add_new_line_if_necessary(current_token_index)
+
+            elif current_token_value in ["for", "try", "if", "else", "while", "do", "switch"]:
+                stack_influential_tokens.append(current_token_value)
+
+            elif current_token_value == "{":
+                indent += self.indent
+                switch_indent = 0
+                current_indent = 0
+                stack_influential_tokens.append(current_token_value)
+                if self.all_tokens[current_token_index - 1].token_value not in ["]", "(", "="]:  # for array and annotation
+                    self.add_new_line_if_necessary(current_token_index)
+
+            elif current_token_value == "}":
+                while stack_influential_tokens.pop() != "{":
+                    pass
+                indent -= self.indent
+                if self.all_tokens[current_token_index + 1].token_value not in ["else", "while", "finally", "catch", ")", ";"]:
+                    self.add_new_line_if_necessary(current_token_index)
+
+            if was_new_line and "switch" in stack_influential_tokens and current_token_value in ["case", "default"]:
+                switch_indent = 0
+                self.add_indent(current_token_index, indent + current_indent + switch_indent)
+                current_token_index += indent + current_indent + switch_indent
+                was_new_line = False
+
+            elif current_token_value == ":" and \
+                    (self.all_tokens[current_token_index - 2].token_value == "case" or
+                     self.all_tokens[current_token_index - 1].token_value == "default"):
+                switch_indent = self.indent
+
+            elif current_token_value == "(":
+                stack_influential_tokens.append(current_token_value)
+
+            elif current_token_value == ")":
+                while stack_influential_tokens.pop() != "(":
+                    pass
+
+            elif current_token_value == "\n":
+                was_new_line = True
+
+            elif current_token_value == "@":
+                current_token_index += 2
+
+                if self.all_tokens[current_token_index].token_value == "(":
+                    current_token_index += 1
+                    number_of_open_parentheses = 1
+                    while number_of_open_parentheses > 0:
+                        if self.all_tokens[current_token_index].token_value == "(":
+                            number_of_open_parentheses += 1
+                        elif self.all_tokens[current_token_index].token_value == ")":
+                            number_of_open_parentheses -= 1
+                        current_token_index += 1
+
+                if not (len(stack_influential_tokens) != 0 and stack_influential_tokens[-1] == "("):
+                    current_token_index -= 1
+                    self.add_new_line_if_necessary(current_token_index)
+                # current_token_index -= 1
+
+            current_token_index += 1
 
     def add_spaces_before_parentheses(self):
         selected_keywords = []
@@ -206,6 +302,10 @@ class Formatter:
                 if self.all_tokens[current_token_index].token_value == "(":
                     number_of_open_parentheses += 1
                     current_token_index += 1
+
+                if self.all_tokens[current_token_index].token_type == TokenType.NUMBER_OR_IDENTIFIERS:
+                    current_token_index += 1
+
                 while number_of_open_parentheses > 0:
                     if self.all_tokens[current_token_index].token_value == "(":
                         number_of_open_parentheses += 1
@@ -215,6 +315,10 @@ class Formatter:
 
                 while self.all_tokens[current_token_index].token_value == ' ':
                     current_token_index += 1
+
+                if self.all_tokens[current_token_index].token_value == ":":
+                    current_token_index += 1
+
                 if self.all_tokens[current_token_index].token_value == '{':
                     self.add_white_space(current_token_index)
             current_token_index += 1
@@ -322,6 +426,20 @@ class Formatter:
                             current_token_index += 1
                 current_token_index += 1
 
+    def add_spaces_between_tokens(self):
+        current_token_index = 0
+        while current_token_index + 1 < len(self.all_tokens):
+            if (self.all_tokens[current_token_index].token_type in
+                    [TokenType.NUMBER_OR_IDENTIFIERS, TokenType.KEYWORD] or
+                self.all_tokens[current_token_index].token_value == "]") and \
+                    (self.all_tokens[current_token_index + 1].token_type in
+                     [TokenType.NUMBER_OR_IDENTIFIERS, TokenType.KEYWORD] or
+                     self.all_tokens[current_token_index + 1].token_value == "@"):
+                self.add_white_space(current_token_index + 1)
+                current_token_index += 1
+            current_token_index += 1
+
+
     def add_spaces(self):
         self.add_spaces_before_parentheses()
         self.add_spaces_around_operators()
@@ -329,13 +447,9 @@ class Formatter:
         self.add_spaces_before_keywords()
         self.add_spaces_in_ternary_operator()
         self.add_spaces_other()
+        self.add_spaces_between_tokens()
 
     def formatting(self):
         self.remove_all_spaces_and_tabs()
-        # validate new lines
-        # add tubs
+        self.validate_new_lines_and_tabs()
         self.add_spaces()
-
-
-
-

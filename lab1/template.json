@@ -40,6 +40,7 @@
       "while": true,
       "do": true,
       "switch": true,
+      "case": true,
       "try": true,
       "catch": true,
       "finally": true,
