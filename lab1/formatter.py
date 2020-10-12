@@ -466,6 +466,96 @@ class Formatter:
                             current_token_index += 2
                 current_token_index += 1
 
+        if self.template_data['spaces']['within']['empty_method_declaration_parentheses']:
+            current_token_index = 1
+            while current_token_index + 1 < len(self.all_tokens):
+                if self.all_tokens[current_token_index].token_value == "(" and \
+                        (self.all_tokens[current_token_index - 1].token_type == TokenType.NUMBER_OR_IDENTIFIERS or
+                         self.all_tokens[self.find_previous_significant_token_index(current_token_index)].token_value
+                         == "=") and \
+                        self.all_tokens[current_token_index + 1].token_value == ")" and \
+                        self.all_tokens[self.find_next_significant_token_index(current_token_index + 1)].token_value \
+                        in ["{", "->"]:
+                    current_token_index += 1
+                    self.add_white_space(current_token_index)
+                current_token_index += 1
+
+        if self.template_data['spaces']['within']['method_declaration_parentheses']:
+            current_token_index = 1
+            while current_token_index + 1 < len(self.all_tokens):
+                current_token = self.all_tokens[current_token_index]
+                if self.all_tokens[current_token_index].token_value == "(" and \
+                        self.all_tokens[current_token_index - 1].token_type == TokenType.NUMBER_OR_IDENTIFIERS and \
+                        self.all_tokens[self.find_next_significant_token_index(current_token_index)].token_type in \
+                        [TokenType.NUMBER_OR_IDENTIFIERS, TokenType.KEYWORD]:
+                    open_bracket_index = current_token_index
+                    current_token_index += 1
+                    if self.all_tokens[current_token_index].token_type in \
+                            [TokenType.NUMBER_OR_IDENTIFIERS, TokenType.KEYWORD]:
+                        current_token_index += 1
+                        number_of_open_parentheses = 1
+                        while number_of_open_parentheses > 0:
+                            if self.all_tokens[current_token_index].token_value == "(":
+                                number_of_open_parentheses += 1
+                            elif self.all_tokens[current_token_index].token_value == ")":
+                                number_of_open_parentheses -= 1
+                            current_token_index += 1
+                        closed_bracket_index = current_token_index - 1
+                        if self.all_tokens[self.find_next_significant_token_index(current_token_index - 1)].token_value \
+                                == "{":
+                            self.add_white_space(closed_bracket_index)
+                            self.add_white_space(open_bracket_index + 1)
+                            current_token_index += 2
+                current_token_index += 1
+
+        if self.template_data['spaces']['within']['empty_array_initializer_braces']:
+            current_token_index = 1
+            while current_token_index + 1 < len(self.all_tokens):
+                if self.all_tokens[current_token_index].token_value == "{" and \
+                        self.all_tokens[current_token_index - 1].token_value == "]" and \
+                        self.all_tokens[current_token_index + 1].token_value == "}":
+                    current_token_index += 1
+                    self.add_white_space(current_token_index)
+                current_token_index += 1
+
+        if self.template_data['spaces']['within']['array_initializer_braces']:
+            current_token_index = 1
+            while current_token_index + 1 < len(self.all_tokens):
+                if self.all_tokens[current_token_index].token_value == "{" and \
+                        self.all_tokens[current_token_index - 1].token_value == "]" and \
+                        self.all_tokens[self.find_next_significant_token_index(current_token_index)].token_type == \
+                        TokenType.NUMBER_OR_IDENTIFIERS:
+                    open_bracket_index = current_token_index
+                    current_token_index += 1
+                    if self.all_tokens[current_token_index].token_type == TokenType.NUMBER_OR_IDENTIFIERS:
+                        current_token_index += 1
+                        number_of_open_parentheses = 1
+                        while number_of_open_parentheses > 0:
+                            if self.all_tokens[current_token_index].token_value == "{":
+                                number_of_open_parentheses += 1
+                            elif self.all_tokens[current_token_index].token_value == "}":
+                                number_of_open_parentheses -= 1
+                            current_token_index += 1
+                        closed_bracket_index = current_token_index - 1
+                        current_token_index += 1
+                        self.add_white_space(closed_bracket_index)
+                        self.add_white_space(open_bracket_index + 1)
+                        current_token_index += 2
+                current_token_index += 1
+
+        if self.template_data['spaces']['within']['brackets']:
+            current_token_index = 0
+            while current_token_index + 1 < len(self.all_tokens):
+                if self.all_tokens[current_token_index].token_value == "[" and \
+                        self.all_tokens[current_token_index + 1].token_type == TokenType.NUMBER_OR_IDENTIFIERS:
+                    current_token_index += 1
+                    self.add_white_space(current_token_index)
+                    while self.all_tokens[current_token_index].token_value != "]":
+                        current_token_index += 1
+                    self.add_white_space(current_token_index)
+                    current_token_index += 1
+                current_token_index += 1
+
     def add_spaces_in_ternary_operator(self):
         json_in_ternary_operator = self.template_data['spaces']['in_ternary_operator']
         current_token_index = 0
@@ -562,7 +652,7 @@ class Formatter:
         current_token_index = 0
         while current_token_index + 1 < len(self.all_tokens):
             if (self.all_tokens[current_token_index].token_type in
-                    [TokenType.NUMBER_OR_IDENTIFIERS, TokenType.KEYWORD] or
+                [TokenType.NUMBER_OR_IDENTIFIERS, TokenType.KEYWORD] or
                 self.all_tokens[current_token_index].token_value == "]") and \
                     (self.all_tokens[current_token_index + 1].token_type in
                      [TokenType.NUMBER_OR_IDENTIFIERS, TokenType.KEYWORD] or

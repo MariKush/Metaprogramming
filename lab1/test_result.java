@@ -1,10 +1,10 @@
 @Annotation( param1 = "value1", param2 = "value2" )
 @SuppressWarnings( {"ALL"} )
 public class Foo< T extends Bar & Abba, U > {
-    int[] X = new int[]{1, 3, 5, 6, 7, 87, 1213, 2};
-    int[] empty = new int[]{};
-    public void foo(int x, int y) {
-        Runnable r = () -> {
+    int[] X = new int[]{ 1, 3, 5, 6, 7, 87, 1213, 2 };
+    int[] empty = new int[]{ };
+    public void foo( int x, int y ) {
+        Runnable r = ( ) -> {
         };
         Runnable r1 = this::bar;
         for ( int i = 0; i < x; i++ ) {
@@ -35,13 +35,13 @@ public class Foo< T extends Bar & Abba, U > {
                 } catch ( MyException e ) {
             } finally {
                 int[] arr = ( int[] ) g( y );
-                x = y >= 0 ? arr[y] : -1;
+                x = y >= 0 ? arr[ y ] : -1;
                 Map< String, String > sMap = new HashMap< String, String >();
                 Bar.< String, Integer >mess( null );
             }
         } while ( true );
     }
-    void bar() {
+    void bar( ) {
         {
             return;
         }
@@ -73,7 +73,7 @@ class Test {
 class Foo {
     @Annotation1
     @Annotation3( param1 = "value1", param2 = "value2" )
-    public static void foo() {
+    public static void foo( ) {
     }
     @Annotation1
     @Annotation3( param1 = "value1", param2 = "value2" )
