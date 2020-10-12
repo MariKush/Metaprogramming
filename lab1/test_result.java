@@ -1,6 +1,6 @@
-@Annotation(param1 = "value1", param2 = "value2")
-@SuppressWarnings({"ALL"})
-public class Foo<T extends Bar & Abba, U> {
+@Annotation( param1 = "value1", param2 = "value2" )
+@SuppressWarnings( {"ALL"} )
+public class Foo< T extends Bar & Abba, U > {
     int[] X = new int[]{1, 3, 5, 6, 7, 87, 1213, 2};
     int[] empty = new int[]{};
     public void foo(int x, int y) {
@@ -32,8 +32,8 @@ public class Foo<T extends Bar & Abba, U> {
             } finally {
                 int[] arr = ( int[] ) g(y);
                 x = y >= 0 ? arr[y] : -1;
-                Map<String, String> sMap = new HashMap<String, String>();
-                Bar.<String, Integer>mess(null);
+                Map< String, String > sMap = new HashMap< String, String >();
+                Bar.< String, Integer >mess(null);
             }
         } while ( true );
     }
@@ -44,7 +44,7 @@ public class Foo<T extends Bar & Abba, U> {
     }
 }
 class Bar {
-    static<U, T> U mess(T t) {
+    static< U, T > U mess(T t) {
         return null;
     }
 }
@@ -64,19 +64,19 @@ class Test {
 
 @Annotation1
 @Annotation2
-@Annotation3(param1 = "value1", param2 = "value2")
+@Annotation3( param1 = "value1", param2 = "value2" )
 @Annotation4
 class Foo {
     @Annotation1
-    @Annotation3(param1 = "value1", param2 = "value2")
+    @Annotation3( param1 = "value1", param2 = "value2" )
     public static void foo() {
     }
     @Annotation1
-    @Annotation3(param1 = "value1", param2 = "value2")
+    @Annotation3( param1 = "value1", param2 = "value2" )
     public static int myFoo;
     public void method(@Annotation1 @Annotation3(param1 = "value1", param2 = "value2")final int param) {
         @Annotation1
-        @Annotation3(param1 = "value1", param2 = "value2")
+        @Annotation3( param1 = "value1", param2 = "value2" )
         final int localVariable;
     }
 }

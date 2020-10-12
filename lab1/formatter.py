@@ -352,8 +352,9 @@ class Formatter:
             if json_within[key]:
                 selected_keywords.append(key)
 
+        # if, for, while, switch, try, catch, synchronized
         current_token_index = 0
-        while current_token_index + 1 < len(self.all_tokens):  # if, for, while, switch, try, catch, synchronized
+        while current_token_index + 1 < len(self.all_tokens):
             if self.all_tokens[current_token_index].token_value in selected_keywords:
                 number_of_open_parentheses = 0
                 current_token_index += 1
@@ -374,6 +375,51 @@ class Formatter:
                         number_of_open_parentheses -= 1
                     current_token_index += 1
 
+                self.add_white_space(current_token_index - 1)
+                current_token_index += 1
+
+            current_token_index += 1
+
+        # annotation
+        current_token_index = 0
+        while current_token_index + 1 < len(self.all_tokens):
+            if self.all_tokens[current_token_index].token_value == "@":
+                current_token_index += 2
+                while self.all_tokens[current_token_index].token_value == ' ':
+                    current_token_index += 1
+                if self.all_tokens[current_token_index].token_value == "(":
+                    number_of_open_parentheses = 1
+                    current_token_index += 1
+                    self.add_white_space(current_token_index)
+                    current_token_index += 1
+                    while number_of_open_parentheses > 0:
+                        if self.all_tokens[current_token_index].token_value == "(":
+                            number_of_open_parentheses += 1
+                        elif self.all_tokens[current_token_index].token_value == ")":
+                            number_of_open_parentheses -= 1
+                        current_token_index += 1
+                    self.add_white_space(current_token_index - 1)
+                    current_token_index += 1
+
+            current_token_index += 1
+
+        # angle brackets
+        current_token_index = 0
+        while current_token_index + 1 < len(self.all_tokens):
+            next_token_value = \
+                self.all_tokens[self.find_next_significant_token_index(current_token_index)].token_value[0]
+            if self.all_tokens[current_token_index].token_value == "<" and \
+                    next_token_value.isalpha() and next_token_value.isupper():
+                number_of_open_parentheses = 1
+                current_token_index += 1
+                self.add_white_space(current_token_index)
+                current_token_index += 1
+                while number_of_open_parentheses > 0:
+                    if self.all_tokens[current_token_index].token_value == "<":
+                        number_of_open_parentheses += 1
+                    elif self.all_tokens[current_token_index].token_value == ">":
+                        number_of_open_parentheses -= 1
+                    current_token_index += 1
                 self.add_white_space(current_token_index - 1)
                 current_token_index += 1
 

@@ -70,7 +70,7 @@
       "method_call_parentheses": false,
       "empty_method_call_parentheses": false,
       "type_cast_parentheses": true,
-      "annotation_parentheses": false,
+      "annotation_parentheses": true,
       "angle_brackets": false
     },
     "in_ternary_operator": {
