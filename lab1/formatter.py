@@ -439,6 +439,33 @@ class Formatter:
                     self.add_white_space(current_token_index)
                 current_token_index += 1
 
+        if self.template_data['spaces']['within']['method_call_parentheses']:
+            current_token_index = 1
+            while current_token_index + 1 < len(self.all_tokens):
+                if self.all_tokens[current_token_index].token_value == "(" and \
+                        self.all_tokens[current_token_index - 1].token_type == TokenType.NUMBER_OR_IDENTIFIERS and \
+                        self.all_tokens[self.find_next_significant_token_index(current_token_index)].token_type == \
+                        TokenType.NUMBER_OR_IDENTIFIERS:
+                    open_bracket_index = current_token_index
+                    current_token_index += 1
+                    if self.all_tokens[current_token_index].token_type == TokenType.NUMBER_OR_IDENTIFIERS:
+                        current_token_index += 1
+                        number_of_open_parentheses = 1
+                        while number_of_open_parentheses > 0:
+                            if self.all_tokens[current_token_index].token_value == "(":
+                                number_of_open_parentheses += 1
+                            elif self.all_tokens[current_token_index].token_value == ")":
+                                number_of_open_parentheses -= 1
+                            current_token_index += 1
+                        closed_bracket_index = current_token_index - 1
+                        current_token_index += 1
+                        if self.all_tokens[self.find_next_significant_token_index(current_token_index)].token_value \
+                                not in ["{", "->"]:
+                            self.add_white_space(closed_bracket_index)
+                            self.add_white_space(open_bracket_index + 1)
+                            current_token_index += 2
+                current_token_index += 1
+
     def add_spaces_in_ternary_operator(self):
         json_in_ternary_operator = self.template_data['spaces']['in_ternary_operator']
         current_token_index = 0

@@ -14,7 +14,7 @@ public class Foo< T extends Bar & Abba, U > {
             try ( MyResource r1 = getResource( ); MyResource r2 = null ) {
                 if ( 0 < x && x < 10 ) {
                     while ( x != y ) {
-                        x = f(x * 3 + 5);
+                        x = f( x * 3 + 5 );
                     }
                 } else {
                     synchronized ( this ) {
@@ -34,10 +34,10 @@ public class Foo< T extends Bar & Abba, U > {
                     }
                 } catch ( MyException e ) {
             } finally {
-                int[] arr = ( int[] ) g(y);
+                int[] arr = ( int[] ) g( y );
                 x = y >= 0 ? arr[y] : -1;
                 Map< String, String > sMap = new HashMap< String, String >();
-                Bar.< String, Integer >mess(null);
+                Bar.< String, Integer >mess( null );
             }
         } while ( true );
     }
@@ -48,20 +48,20 @@ public class Foo< T extends Bar & Abba, U > {
     }
 }
 class Bar {
-    static< U, T > U mess(T t) {
+    static< U, T > U mess( T t ) {
         return null;
     }
 }
 interface Abba{
 }
 class Test {
-    public static void main(String[] args) {
+    public static void main( String[] args ) {
         int[] array = {51, 136, 387};
         for ( int i : array ) {
-            System.out.println(i);
+            System.out.println( i );
         }
         if ( a < b ) {
-            println(a);
+            println( a );
         }
     }
 }
@@ -78,7 +78,7 @@ class Foo {
     @Annotation1
     @Annotation3( param1 = "value1", param2 = "value2" )
     public static int myFoo;
-    public void method(@Annotation1 @Annotation3(param1 = "value1", param2 = "value2")final int param) {
+    public void method(@Annotation1 @Annotation3( param1 = "value1", param2 = "value2" )final int param) {
         @Annotation1
         @Annotation3( param1 = "value1", param2 = "value2" )
         final int localVariable;

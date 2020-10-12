@@ -67,7 +67,7 @@
       "grouping_parentheses": false,
       "method_declaration_parentheses": false,
       "empty_method_declaration_parentheses": false,
-      "method_call_parentheses": false,
+      "method_call_parentheses": true,
       "empty_method_call_parentheses": true,
       "type_cast_parentheses": true,
       "annotation_parentheses": true,
