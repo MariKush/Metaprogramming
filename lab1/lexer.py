@@ -1,6 +1,6 @@
 from enum import Enum
 
-code = None
+code = ""
 size = None
 
 start_pos_of_token = 0

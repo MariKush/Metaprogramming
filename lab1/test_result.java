@@ -7,18 +7,18 @@ public class Foo<T extends Bar & Abba, U> {
         Runnable r = () -> {
         };
         Runnable r1 = this::bar;
-        for (int i = 0; i < x; i++) {
+        for ( int i = 0; i < x; i++ ) {
             y += (y ^ 0x123) << 2;
         }
         do {
-            try (MyResource r1 = getResource(); MyResource r2 = null) {
-                if (0 < x && x < 10) {
-                    while (x != y) {
+            try ( MyResource r1 = getResource(); MyResource r2 = null ) {
+                if ( 0 < x && x < 10 ) {
+                    while ( x != y ) {
                         x = f(x * 3 + 5);
                     }
                 } else {
-                    synchronized (this) {
-                        switch (a) {
+                    synchronized ( this ) {
+                        switch ( a ) {
                             case 0:case 1:doCase0();
                                 break;
                             case 2:case 3:{
@@ -28,14 +28,14 @@ public class Foo<T extends Bar & Abba, U> {
                             }
                         }
                     }
-                } catch (MyException e) {
+                } catch ( MyException e ) {
             } finally {
-                int[] arr = (int[]) g(y);
+                int[] arr = ( int[] ) g(y);
                 x = y >= 0 ? arr[y] : -1;
                 Map<String, String> sMap = new HashMap<String, String>();
                 Bar.<String, Integer>mess(null);
             }
-        } while (true);
+        } while ( true );
     }
     void bar() {
         {
@@ -53,10 +53,10 @@ interface Abba{
 class Test {
     public static void main(String[] args) {
         int[] array = {51, 136, 387};
-        for (int i : array) {
+        for ( int i : array ) {
             System.out.println(i);
         }
-        if (a < b) {
+        if ( a < b ) {
             println(a);
         }
     }

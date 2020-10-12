@@ -52,6 +52,27 @@
       "catch": true,
       "finally": true
     },
+    "within": {
+      "if": true,
+      "for": true,
+      "while": true,
+      "switch": true,
+      "try": true,
+      "catch": true,
+      "synchronized": true,
+      "code_braced": false,
+      "brackets": false,
+      "array_initializer_braces": false,
+      "empty_array_initializer_braces": false,
+      "grouping_parentheses": false,
+      "method_declaration_parentheses": false,
+      "empty_method_declaration_parentheses": false,
+      "method_call_parentheses": false,
+      "empty_method_call_parentheses": false,
+      "type_cast_parentheses": true,
+      "annotation_parentheses": false,
+      "angle_brackets": false
+    },
     "in_ternary_operator": {
       "before_question_mark": true,
       "after_question_mark": true,

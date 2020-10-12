@@ -101,15 +101,14 @@ class Formatter:
         current_token_index = 0
         stack_influential_tokens = []
         indent = 0
-        print(self.indent)
         current_indent = 0  # if, for, while, do without "{}"
         switch_indent = 0
         was_new_line = False
         while current_token_index + 1 < len(self.all_tokens):
             current_token_value = self.all_tokens[current_token_index].token_value
-            current_token = self.all_tokens[current_token_index]
 
-            if was_new_line and not ("switch" in stack_influential_tokens and current_token_value in ["case", "default"]):
+            if was_new_line and not ("switch" in stack_influential_tokens and
+                                     current_token_value in ["case", "default"]):
                 was_new_line = False
                 if current_token_value == "}":
                     indent -= self.indent
@@ -131,14 +130,16 @@ class Formatter:
                 switch_indent = 0
                 current_indent = 0
                 stack_influential_tokens.append(current_token_value)
-                if self.all_tokens[current_token_index - 1].token_value not in ["]", "(", "="]:  # for array and annotation
+                if self.all_tokens[current_token_index - 1].token_value not in ["]", "(", "="]:
+                    # for array and annotation
                     self.add_new_line_if_necessary(current_token_index)
 
             elif current_token_value == "}":
                 while stack_influential_tokens.pop() != "{":
                     pass
                 indent -= self.indent
-                if self.all_tokens[current_token_index + 1].token_value not in ["else", "while", "finally", "catch", ")", ";"]:
+                if self.all_tokens[current_token_index + 1].token_value not in \
+                        ["else", "while", "finally", "catch", ")", ";"]:
                     self.add_new_line_if_necessary(current_token_index)
 
             if was_new_line and "switch" in stack_influential_tokens and current_token_value in ["case", "default"]:
@@ -270,7 +271,7 @@ class Formatter:
             if self.all_tokens[current_token_index].token_type == TokenType.NUMBER_OR_IDENTIFIERS:
                 if self.all_tokens[current_token_index + 1].token_value == '(' and \
                         (self.all_tokens[current_token_index - 1].token_type in [TokenType.KEYWORD,
-                                                                                 TokenType.NUMBER_OR_IDENTIFIERS] \
+                                                                                 TokenType.NUMBER_OR_IDENTIFIERS]
                          or self.all_tokens[current_token_index - 1].token_value in ['>', ']']):
                     if spaces_before_method_left_brace:
                         while self.all_tokens[current_token_index].token_value != '{':
@@ -338,6 +339,44 @@ class Formatter:
                     self.all_tokens[current_token_index - 1].token_value == "}":
                 self.add_white_space(current_token_index)
                 current_token_index += 1
+            current_token_index += 1
+
+    def add_spaces_within(self):
+        all_from_within = []
+        selected_keywords = []
+        json_within = self.template_data['spaces']['within']
+        for key in json_within:
+            all_from_within.append(key)
+
+        for key in all_from_within[:7]:
+            if json_within[key]:
+                selected_keywords.append(key)
+
+        current_token_index = 0
+        while current_token_index + 1 < len(self.all_tokens):  # if, for, while, switch, try, catch, synchronized
+            if self.all_tokens[current_token_index].token_value in selected_keywords:
+                number_of_open_parentheses = 0
+                current_token_index += 1
+                while self.all_tokens[current_token_index].token_value == ' ':
+                    current_token_index += 1
+
+                if self.all_tokens[current_token_index].token_value == "(":
+                    number_of_open_parentheses += 1
+                    current_token_index += 1
+
+                self.add_white_space(current_token_index)
+                current_token_index += 1
+
+                while number_of_open_parentheses > 0:
+                    if self.all_tokens[current_token_index].token_value == "(":
+                        number_of_open_parentheses += 1
+                    elif self.all_tokens[current_token_index].token_value == ")":
+                        number_of_open_parentheses -= 1
+                    current_token_index += 1
+
+                self.add_white_space(current_token_index - 1)
+                current_token_index += 1
+
             current_token_index += 1
 
     def add_spaces_in_ternary_operator(self):
@@ -410,11 +449,12 @@ class Formatter:
                         current_token_index += 1
             current_token_index += 1
 
-        if json_other['after_type_cast']:
+        if json_other['after_type_cast'] or self.template_data['spaces']['within']['type_cast_parentheses']:
             current_token_index = 0
             while current_token_index + 1 < len(self.all_tokens):
                 if self.all_tokens[current_token_index].token_value == '(':
                     current_token_index += 1
+                    open_parentheses = current_token_index
                     if self.all_tokens[current_token_index].token_type in [TokenType.NUMBER_OR_IDENTIFIERS,
                                                                            TokenType.KEYWORD]:
                         current_token_index += 1
@@ -422,8 +462,13 @@ class Formatter:
                             current_token_index += 2
                         if self.all_tokens[current_token_index].token_value == ')' and \
                                 self.all_tokens[current_token_index + 1].token_type == TokenType.NUMBER_OR_IDENTIFIERS:
-                            self.add_white_space(current_token_index + 1)
-                            current_token_index += 1
+                            if self.template_data['spaces']['within']['type_cast_parentheses']:
+                                self.add_white_space(current_token_index)
+                                self.add_white_space(open_parentheses)
+                                current_token_index += 2
+                            if json_other['after_type_cast']:
+                                self.add_white_space(current_token_index + 1)
+                                current_token_index += 1
                 current_token_index += 1
 
     def add_spaces_between_tokens(self):
@@ -439,12 +484,12 @@ class Formatter:
                 current_token_index += 1
             current_token_index += 1
 
-
     def add_spaces(self):
         self.add_spaces_before_parentheses()
         self.add_spaces_around_operators()
         self.add_spaces_before_left_brace()
         self.add_spaces_before_keywords()
+        self.add_spaces_within()
         self.add_spaces_in_ternary_operator()
         self.add_spaces_other()
         self.add_spaces_between_tokens()
