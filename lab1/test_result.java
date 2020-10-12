@@ -11,7 +11,7 @@ public class Foo< T extends Bar & Abba, U > {
             y += (y ^ 0x123) << 2;
         }
         do {
-            try ( MyResource r1 = getResource(); MyResource r2 = null ) {
+            try ( MyResource r1 = getResource( ); MyResource r2 = null ) {
                 if ( 0 < x && x < 10 ) {
                     while ( x != y ) {
                         x = f(x * 3 + 5);
@@ -19,12 +19,16 @@ public class Foo< T extends Bar & Abba, U > {
                 } else {
                     synchronized ( this ) {
                         switch ( a ) {
-                            case 0:case 1:doCase0();
+                            case 0:
+                            case 1:
+                                doCase0( );
                                 break;
-                            case 2:case 3:{
+                            case 2:
+                            case 3: {
                                 return;
                             }
-                            default:doDefault();
+                            default:
+                                doDefault( );
                             }
                         }
                     }

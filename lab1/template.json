@@ -68,10 +68,10 @@
       "method_declaration_parentheses": false,
       "empty_method_declaration_parentheses": false,
       "method_call_parentheses": false,
-      "empty_method_call_parentheses": false,
+      "empty_method_call_parentheses": true,
       "type_cast_parentheses": true,
       "annotation_parentheses": true,
-      "angle_brackets": false
+      "angle_brackets": true
     },
     "in_ternary_operator": {
       "before_question_mark": true,

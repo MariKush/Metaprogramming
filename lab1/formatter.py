@@ -151,7 +151,9 @@ class Formatter:
             elif current_token_value == ":" and \
                     (self.all_tokens[current_token_index - 2].token_value == "case" or
                      self.all_tokens[current_token_index - 1].token_value == "default"):
-                switch_indent = self.indent
+                if self.all_tokens[current_token_index + 1].token_value != '{':
+                    switch_indent = self.indent
+                    self.add_new_line(current_token_index + 1)
 
             elif current_token_value == "(":
                 stack_influential_tokens.append(current_token_value)
@@ -380,50 +382,62 @@ class Formatter:
 
             current_token_index += 1
 
-        # annotation
-        current_token_index = 0
-        while current_token_index + 1 < len(self.all_tokens):
-            if self.all_tokens[current_token_index].token_value == "@":
-                current_token_index += 2
-                while self.all_tokens[current_token_index].token_value == ' ':
-                    current_token_index += 1
-                if self.all_tokens[current_token_index].token_value == "(":
+        if self.template_data['spaces']['within']['annotation_parentheses']:
+            current_token_index = 0
+            while current_token_index + 1 < len(self.all_tokens):
+                if self.all_tokens[current_token_index].token_value == "@":
+                    current_token_index += 2
+                    while self.all_tokens[current_token_index].token_value == ' ':
+                        current_token_index += 1
+                    if self.all_tokens[current_token_index].token_value == "(":
+                        number_of_open_parentheses = 1
+                        current_token_index += 1
+                        self.add_white_space(current_token_index)
+                        current_token_index += 1
+                        while number_of_open_parentheses > 0:
+                            if self.all_tokens[current_token_index].token_value == "(":
+                                number_of_open_parentheses += 1
+                            elif self.all_tokens[current_token_index].token_value == ")":
+                                number_of_open_parentheses -= 1
+                            current_token_index += 1
+                        self.add_white_space(current_token_index - 1)
+                        current_token_index += 1
+
+                current_token_index += 1
+
+        if self.template_data['spaces']['within']['angle_brackets']:
+            current_token_index = 0
+            while current_token_index + 1 < len(self.all_tokens):
+                next_token_value = \
+                    self.all_tokens[self.find_next_significant_token_index(current_token_index)].token_value[0]
+                if self.all_tokens[current_token_index].token_value == "<" and \
+                        next_token_value.isalpha() and next_token_value.isupper():
                     number_of_open_parentheses = 1
                     current_token_index += 1
                     self.add_white_space(current_token_index)
                     current_token_index += 1
                     while number_of_open_parentheses > 0:
-                        if self.all_tokens[current_token_index].token_value == "(":
+                        if self.all_tokens[current_token_index].token_value == "<":
                             number_of_open_parentheses += 1
-                        elif self.all_tokens[current_token_index].token_value == ")":
+                        elif self.all_tokens[current_token_index].token_value == ">":
                             number_of_open_parentheses -= 1
                         current_token_index += 1
                     self.add_white_space(current_token_index - 1)
                     current_token_index += 1
 
-            current_token_index += 1
+                current_token_index += 1
 
-        # angle brackets
-        current_token_index = 0
-        while current_token_index + 1 < len(self.all_tokens):
-            next_token_value = \
-                self.all_tokens[self.find_next_significant_token_index(current_token_index)].token_value[0]
-            if self.all_tokens[current_token_index].token_value == "<" and \
-                    next_token_value.isalpha() and next_token_value.isupper():
-                number_of_open_parentheses = 1
-                current_token_index += 1
-                self.add_white_space(current_token_index)
-                current_token_index += 1
-                while number_of_open_parentheses > 0:
-                    if self.all_tokens[current_token_index].token_value == "<":
-                        number_of_open_parentheses += 1
-                    elif self.all_tokens[current_token_index].token_value == ">":
-                        number_of_open_parentheses -= 1
+        if self.template_data['spaces']['within']['empty_method_call_parentheses']:
+            current_token_index = 1
+            while current_token_index + 1 < len(self.all_tokens):
+                if self.all_tokens[current_token_index].token_value == "(" and \
+                        self.all_tokens[current_token_index - 1].token_type == TokenType.NUMBER_OR_IDENTIFIERS and \
+                        self.all_tokens[current_token_index + 1].token_value == ")" and \
+                        self.all_tokens[self.find_next_significant_token_index(current_token_index + 1)].token_value \
+                        not in ["{", "->"]:
                     current_token_index += 1
-                self.add_white_space(current_token_index - 1)
+                    self.add_white_space(current_token_index)
                 current_token_index += 1
-
-            current_token_index += 1
 
     def add_spaces_in_ternary_operator(self):
         json_in_ternary_operator = self.template_data['spaces']['in_ternary_operator']
