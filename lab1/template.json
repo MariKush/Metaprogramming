@@ -15,7 +15,9 @@
       "switch": true,
       "try": true,
       "catch": true,
-      "synchronized": true
+      "synchronized": true,
+      "method_declaration": false,
+      "method_call": false
     },
     "around_operators":{
       "assignment": true,
@@ -29,7 +31,6 @@
       "unary": false,
       "lambda": true,
       "method_reference": false
-
     },
     "before_left_brace": {
       "class": true,
@@ -63,12 +64,12 @@
       "code_braced": false,
       "brackets": true,
       "array_initializer_braces": true,
-      "empty_array_initializer_braces": true,
+      "empty_array_initializer_braces": false,
       "grouping_parentheses": false,
-      "method_declaration_parentheses": true,
-      "empty_method_declaration_parentheses": true,
-      "method_call_parentheses": true,
-      "empty_method_call_parentheses": true,
+      "method_declaration_parentheses": false,
+      "empty_method_declaration_parentheses": false,
+      "method_call_parentheses": false,
+      "empty_method_call_parentheses": false,
       "type_cast_parentheses": true,
       "annotation_parentheses": true,
       "angle_brackets": true
