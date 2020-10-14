@@ -143,7 +143,7 @@ def can_add_comment():
         current_column_local = current_column
         current_row_local = current_row
 
-        while code[end_pos_of_token] != "*" and code[end_pos_of_token + 1] != "/":
+        while code[end_pos_of_token] != "*" or code[end_pos_of_token + 1] != "/":
             current_column_local += 1
             if code[end_pos_of_token] == "\n":
                 current_row_local += 1
