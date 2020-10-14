@@ -546,7 +546,8 @@ class Formatter:
             current_token_index = 1
             while current_token_index + 1 < len(self.all_tokens):
                 if self.all_tokens[current_token_index].token_value == "(" and \
-                        (self.all_tokens[current_token_index - 1].token_type == TokenType.NUMBER_OR_IDENTIFIERS or
+                        (self.all_tokens[self.find_previous_significant_token_index(current_token_index)].token_type
+                         == TokenType.NUMBER_OR_IDENTIFIERS or
                          self.all_tokens[self.find_previous_significant_token_index(current_token_index)].token_value
                          == "=") and \
                         self.all_tokens[current_token_index + 1].token_value == ")" and \
@@ -561,7 +562,8 @@ class Formatter:
             while current_token_index + 1 < len(self.all_tokens):
                 current_token = self.all_tokens[current_token_index]
                 if self.all_tokens[current_token_index].token_value == "(" and \
-                        self.all_tokens[current_token_index - 1].token_type == TokenType.NUMBER_OR_IDENTIFIERS and \
+                        self.all_tokens[self.find_previous_significant_token_index(current_token_index)].token_type == \
+                        TokenType.NUMBER_OR_IDENTIFIERS and \
                         self.all_tokens[self.find_next_significant_token_index(current_token_index)].token_type in \
                         [TokenType.NUMBER_OR_IDENTIFIERS, TokenType.KEYWORD]:
                     open_bracket_index = current_token_index
