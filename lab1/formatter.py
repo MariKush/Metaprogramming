@@ -90,8 +90,10 @@ class Formatter:
 
     def find_next_significant_token_index(self, index):
         index += 1
-        while self.all_tokens[index].token_type == TokenType.WHITE_SPACE and index + 1 < len(self.all_tokens):
+        while index + 1 < len(self.all_tokens) and self.all_tokens[index].token_type == TokenType.WHITE_SPACE:
             index += 1
+        if index >= len(self.all_tokens):
+            return -1
         return index
 
     def add_new_line_if_necessary(self, current_token_index):
@@ -126,7 +128,7 @@ class Formatter:
         current_token_index = 0
         was_import = False
         stack_influential_tokens = []
-        while current_token_index + 1 < len(self.all_tokens):
+        while current_token_index < len(self.all_tokens):
             current_token = self.all_tokens[current_token_index]
             if self.all_tokens[current_token_index].token_value == "package":
                 if self.find_previous_significant_token_index(current_token_index) != -1:
@@ -192,10 +194,16 @@ class Formatter:
                     pass
                 if "{" not in stack_influential_tokens:
                     current_token_index += self.check_count_of_blank_lines(
+                        self.find_previous_significant_token_index(current_token_index),
                         current_token_index,
-                        self.find_next_significant_token_index(current_token_index),
-                        self.template_data['blank_lines']['minimum']['around_class'],
-                        self.template_data['blank_lines']['maximum']['in_declarations'])
+                        self.template_data['blank_lines']['minimum']['before_class_end'],
+                        self.template_data['blank_lines']['minimum']['before_class_end'])
+                    if self.find_next_significant_token_index(current_token_index) != -1:
+                        current_token_index += self.check_count_of_blank_lines(
+                            current_token_index,
+                            self.find_next_significant_token_index(current_token_index),
+                            self.template_data['blank_lines']['minimum']['around_class'],
+                            self.template_data['blank_lines']['maximum']['in_declarations'])
 
             if self.all_tokens[current_token_index].token_value in ["class", "interface"]:
                 start_of_class_declaration = current_token_index
@@ -208,6 +216,13 @@ class Formatter:
                         start_of_class_declaration,
                         self.template_data['blank_lines']['minimum']['around_class'],
                         self.template_data['blank_lines']['maximum']['in_declarations'])
+
+            if self.all_tokens[current_token_index].token_value == "\n" and "{" in stack_influential_tokens:
+                if self.find_previous_significant_token_index(current_token_index) != -1 and \
+                        self.find_next_significant_token_index(current_token_index) != -1:
+                    self.check_count_of_blank_lines(self.find_previous_significant_token_index(current_token_index),
+                                                    self.find_next_significant_token_index(current_token_index),
+                                                    0, self.template_data['blank_lines']['maximum']['in_code'])
 
             current_token_index += 1
 
@@ -259,6 +274,10 @@ class Formatter:
                     if not (self.template_data['tabs_and_indents']['do_not_indent_top_level_class_members']):
                         indent += self.indent
 
+                elif len(stack_influential_tokens) >= 1 and stack_influential_tokens[-1] == "switch":
+                    if self.template_data['wrapping_and_braces']['indent_case_branches']:
+                        indent += self.indent
+
                 else:
                     indent += self.indent
 
@@ -276,6 +295,11 @@ class Formatter:
                 if len(stack_influential_tokens) == 1 and stack_influential_tokens[0] == "class":
                     if not (self.template_data['tabs_and_indents']['do_not_indent_top_level_class_members']):
                         indent -= self.indent
+
+                elif len(stack_influential_tokens) >= 1 and stack_influential_tokens[-1] == "switch":
+                    if self.template_data['wrapping_and_braces']['indent_case_branches']:
+                        indent -= self.indent
+
                 else:
                     indent -= self.indent
 
@@ -293,7 +317,15 @@ class Formatter:
                      self.all_tokens[current_token_index - 1].token_value == "default"):
                 if self.all_tokens[current_token_index + 1].token_value != '{':
                     switch_indent = self.indent
-                    self.add_new_line(current_token_index + 1)
+                    if self.template_data['wrapping_and_braces']['each_case_on_separate_line']:
+                        self.add_new_line_if_necessary(current_token_index)
+                    else:
+                        if self.all_tokens[self.find_next_significant_token_index(current_token_index)].token_value\
+                                not in ["case", "default"]:
+                            self.add_new_line_if_necessary(current_token_index)
+                        else:
+                            while self.all_tokens[current_token_index + 1].token_value not in ["case", "default"]:
+                                self.all_tokens.pop(current_token_index + 1)
 
             elif current_token_value == "(":
                 stack_influential_tokens.append(current_token_value)

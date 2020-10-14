@@ -2,7 +2,7 @@
   "tabs_and_indents": {
     "use_tab_character": false,
     "indent": 4,
-    "keep_indents_on_empty_lines": true,
+    "keep_indents_on_empty_lines": false,
     "do_not_indent_top_level_class_members": false
   },
   "spaces": {
@@ -14,8 +14,8 @@
       "try": true,
       "catch": true,
       "synchronized": true,
-      "method_declaration": true,
-      "method_call": true
+      "method_declaration": false,
+      "method_call": false
     },
     "around_operators":{
       "assignment": true,
@@ -44,7 +44,7 @@
       "catch": true,
       "finally": true,
       "synchronized": true,
-      "array_initializer": true
+      "array_initializer": false
     },
     "before_keyword": {
       "else": true,
@@ -53,23 +53,23 @@
       "finally": true
     },
     "within": {
-      "if": true,
-      "for": true,
-      "while": true,
-      "switch": true,
-      "try": true,
-      "catch": true,
-      "synchronized": true,
-      "brackets": true,
-      "array_initializer_braces": true,
-      "empty_array_initializer_braces": true,
-      "method_declaration_parentheses": true,
-      "empty_method_declaration_parentheses": true,
-      "method_call_parentheses": true,
-      "empty_method_call_parentheses": true,
-      "type_cast_parentheses": true,
-      "annotation_parentheses": true,
-      "angle_brackets": true
+      "if": false,
+      "for": false,
+      "while": false,
+      "switch": false,
+      "try": false,
+      "catch": false,
+      "synchronized": false,
+      "brackets": false,
+      "array_initializer_braces": false,
+      "empty_array_initializer_braces": false,
+      "method_declaration_parentheses": false,
+      "empty_method_declaration_parentheses": false,
+      "method_call_parentheses": false,
+      "empty_method_call_parentheses": false,
+      "type_cast_parentheses": false,
+      "annotation_parentheses": false,
+      "angle_brackets": false
     },
     "in_ternary_operator": {
       "before_question_mark": true,
@@ -87,18 +87,24 @@
       "after_type_cast": true
     }
   },
+  "wrapping_and_braces": {
+    "indent_case_branches": true,
+    "each_case_on_separate_line": true
+  },
   "blank_lines": {
     "maximum": {
       "in_declarations": 2,
+      "in_code": 2,
       "between_header_and_package": 2
     },
     "minimum": {
       "before_package_statement": 0,
-      "after_package_statement": 2,
+      "after_package_statement": 1,
       "before_imports": 1,
       "after_imports": 1,
-      "around_class": 3,
-      "after_class_header": 3
+      "around_class": 1,
+      "after_class_header": 0,
+      "before_class_end": 0
     }
   }
 }

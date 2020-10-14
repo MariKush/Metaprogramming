@@ -45,16 +45,33 @@ public class Foo< T extends Bar & Abba, U > {
 				} else {
 					synchronized ( this ) {
 						switch ( a ) {
+
 							case 0:
+
 							case 1:
+
 								doCase0 ( );
+
 								break;
+
+
+
 							case 2:
-							case 3: {
+							case 3:{
+
 								return;
+
+
+
+
+
+
 							}
 							default:
 								doDefault ( );
+
+
+
 							}
 						}
 					}
