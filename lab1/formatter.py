@@ -69,6 +69,9 @@ class Formatter:
     def add_white_space(self, position):
         self.all_tokens.insert(position, Token(TokenType.WHITE_SPACE, " ", None, None))
 
+    def add_tab_character(self, position):
+        self.all_tokens.insert(position, Token(TokenType.WHITE_SPACE, "\t", None, None))
+
     def remove_all_spaces_and_tabs(self):
         i = 0
         while i < len(self.all_tokens):
@@ -94,8 +97,13 @@ class Formatter:
             self.add_new_line(current_token_index + 1)
 
     def add_indent(self, current_token_index, indent):
+        if self.template_data['tabs_and_indents']['use_tab_character']:
+            for i in range(int(indent/self.indent)):
+                self.add_tab_character(current_token_index)
+            return int(indent/self.indent)
         for i in range(indent):
             self.add_white_space(current_token_index)
+        return indent
 
     def validate_new_lines_and_tabs(self):
         current_token_index = 0
@@ -112,8 +120,8 @@ class Formatter:
                 was_new_line = False
                 if current_token_value == "}":
                     indent -= self.indent
-                self.add_indent(current_token_index, indent + current_indent + switch_indent)
-                current_token_index += indent + current_indent + switch_indent
+                current_token_index += self.add_indent(current_token_index, indent + current_indent + switch_indent)
+                # current_token_index += indent + current_indent + switch_indent
                 current_indent = 0
                 if current_token_value == "}":
                     indent += self.indent
@@ -144,8 +152,8 @@ class Formatter:
 
             if was_new_line and "switch" in stack_influential_tokens and current_token_value in ["case", "default"]:
                 switch_indent = 0
-                self.add_indent(current_token_index, indent + current_indent + switch_indent)
-                current_token_index += indent + current_indent + switch_indent
+                current_token_index += self.add_indent(current_token_index, indent + current_indent + switch_indent)
+                # current_token_index += indent + current_indent + switch_indent
                 was_new_line = False
 
             elif current_token_value == ":" and \
