@@ -1,11 +1,9 @@
 {
   "tabs_and_indents": {
-    "tab_size": 4,
+    "use_tab_character": false,
     "indent": 4,
-    "configuration_indent": 8,
-    "keep_indents_on_empty_lines": false,
-    "label_indent": 0,
-    "absolute_label_indent": false
+    "keep_indents_on_empty_lines": true,
+    "do_not_indent_top_level_class_members": false
   },
   "spaces": {
     "before_parentheses":{
@@ -30,7 +28,7 @@
       "shift": true,
       "unary": false,
       "lambda": true,
-      "method_reference": false
+      "method_reference": true
     },
     "before_left_brace": {
       "class": true,
@@ -45,7 +43,8 @@
       "try": true,
       "catch": true,
       "finally": true,
-      "synchronized": true
+      "synchronized": true,
+      "array_initializer": true
     },
     "before_keyword": {
       "else": true,
@@ -61,11 +60,9 @@
       "try": true,
       "catch": true,
       "synchronized": true,
-      "code_braced": false,
       "brackets": true,
       "array_initializer_braces": true,
-      "empty_array_initializer_braces": false,
-      "grouping_parentheses": false,
+      "empty_array_initializer_braces": true,
       "method_declaration_parentheses": true,
       "empty_method_declaration_parentheses": true,
       "method_call_parentheses": true,
@@ -88,6 +85,20 @@
       "after_colon_in_foreach": true,
       "before_colon_in_foreach": true,
       "after_type_cast": true
+    }
+  },
+  "blank_lines": {
+    "maximum": {
+      "in_declarations": 2,
+      "between_header_and_package": 2
+    },
+    "minimum": {
+      "before_package_statement": 0,
+      "after_package_statement": 2,
+      "before_imports": 1,
+      "after_imports": 1,
+      "around_class": 3,
+      "after_class_header": 3
     }
   }
 }

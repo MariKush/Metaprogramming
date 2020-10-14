@@ -5,10 +5,24 @@
 
 
 
-package p;
 
-@Annotation ( param1 = "value1", param2 = "value2" )
-@SuppressWarnings( {"ALL"} )
+
+import com.intellij.idea.Main;
+
+
+
+
+
+
+
+
+
+
+import javax.swing;
+import java.util.Vector;
+
+
+
 public class Foo< T extends Bar & Abba, U > {
 
 	int[] X = new int[]{ 1, 3, 5, 6, 7, 87, 1213, 2 };
@@ -81,11 +95,6 @@ class Test {
 
 	}
 }
-
-@Annotation1
-@Annotation2
-@Annotation3 ( param1 = "value1", param2 = "value2" )
-@Annotation4
 class Foo {
 	@Annotation1
 	@Annotation3 ( param1 = "value1", param2 = "value2" )

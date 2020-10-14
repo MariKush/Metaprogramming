@@ -116,15 +116,18 @@ class Formatter:
             for i in range(min_count - count):
                 self.add_new_line(next_token_index)
             return min_count - count
-        elif count > max_count:
+        elif count > max_count >= min_count:
             for i in range(count - max_count):
                 self.all_tokens.pop(previous_token_index + 1)
-            return count - max_count
+            return max_count - count
         return 0
 
     def validate_blank_lines(self):
         current_token_index = 0
+        was_import = False
+        stack_influential_tokens = []
         while current_token_index + 1 < len(self.all_tokens):
+            current_token = self.all_tokens[current_token_index]
             if self.all_tokens[current_token_index].token_value == "package":
                 if self.find_previous_significant_token_index(current_token_index) != -1:
                     current_token_index += self.check_count_of_blank_lines(
@@ -144,6 +147,68 @@ class Formatter:
                     self.find_next_significant_token_index(current_token_index),
                     self.template_data['blank_lines']['minimum']['after_package_statement'],
                     self.template_data['blank_lines']['maximum']['in_declarations'])
+
+            if self.all_tokens[current_token_index].token_value == "import":
+                if self.find_previous_significant_token_index(current_token_index) != -1:
+                    if not was_import:
+                        was_import = True
+                        current_token_index += self.check_count_of_blank_lines(
+                            self.find_previous_significant_token_index(current_token_index),
+                            current_token_index,
+                            self.template_data['blank_lines']['minimum']['before_imports'],
+                            self.template_data['blank_lines']['maximum']['in_declarations'])
+                    else:
+                        current_token_index += self.check_count_of_blank_lines(
+                            self.find_previous_significant_token_index(current_token_index),
+                            current_token_index,
+                            0,
+                            self.template_data['blank_lines']['maximum']['in_declarations'])
+                else:
+                    was_import = True
+                    current_token_index += self.check_count_of_blank_lines(-2, current_token_index, 0, 0)
+
+                while self.all_tokens[current_token_index].token_value != ";":
+                    current_token_index += 1
+                if self.all_tokens[self.find_next_significant_token_index(current_token_index)].token_value != "import":
+                    current_token_index += self.check_count_of_blank_lines(
+                        current_token_index,
+                        self.find_next_significant_token_index(current_token_index),
+                        self.template_data['blank_lines']['minimum']['after_imports'],
+                        self.template_data['blank_lines']['maximum']['in_declarations'])
+
+            if self.all_tokens[current_token_index].token_value == "{":
+                if len(stack_influential_tokens) > 0 and stack_influential_tokens[-1] in ["class", "interface"]:
+                    self.check_count_of_blank_lines(
+                        current_token_index,
+                        self.find_next_significant_token_index(current_token_index),
+                        self.template_data['blank_lines']['minimum']['after_class_header'],
+                        self.template_data['blank_lines']['minimum']['after_class_header'])
+
+            if self.all_tokens[current_token_index].token_value in ["class", "interface", "{"]:
+                stack_influential_tokens.append(self.all_tokens[current_token_index].token_value)
+
+            if self.all_tokens[current_token_index].token_value == "}":
+                while stack_influential_tokens.pop() != "{":
+                    pass
+                if "{" not in stack_influential_tokens:
+                    current_token_index += self.check_count_of_blank_lines(
+                        current_token_index,
+                        self.find_next_significant_token_index(current_token_index),
+                        self.template_data['blank_lines']['minimum']['around_class'],
+                        self.template_data['blank_lines']['maximum']['in_declarations'])
+
+            if self.all_tokens[current_token_index].token_value in ["class", "interface"]:
+                start_of_class_declaration = current_token_index
+                if self.all_tokens[self.find_previous_significant_token_index(current_token_index)].token_value in \
+                        ["public", "private", "protected"]:
+                    start_of_class_declaration = self.find_previous_significant_token_index(current_token_index)
+                if self.find_previous_significant_token_index(start_of_class_declaration) != -1:
+                    current_token_index += self.check_count_of_blank_lines(
+                        self.find_previous_significant_token_index(start_of_class_declaration),
+                        start_of_class_declaration,
+                        self.template_data['blank_lines']['minimum']['around_class'],
+                        self.template_data['blank_lines']['maximum']['in_declarations'])
+
             current_token_index += 1
 
     def validate_new_lines_and_tabs(self):
