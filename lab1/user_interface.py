@@ -135,4 +135,5 @@ python main.py -h
                             formatter.indent, all_tokens)
                         verify_sequence_of_tokens(filename, all_tokens, all_tokens_after_formatting)
                 except:
-                    print(f"unexpected error in {filename} file")
+                    print(f"unexpected error in {filename} file"
+                          f"\n Please contact @MareeKu in Telegram")
