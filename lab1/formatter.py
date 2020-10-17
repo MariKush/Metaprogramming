@@ -129,7 +129,6 @@ class Formatter:
         was_import = False
         stack_influential_tokens = []
         while current_token_index < len(self.all_tokens):
-            current_token = self.all_tokens[current_token_index]
             if self.all_tokens[current_token_index].token_value == "package":
                 if self.find_previous_significant_token_index(current_token_index) != -1:
                     current_token_index += self.check_count_of_blank_lines(
@@ -235,7 +234,6 @@ class Formatter:
         was_new_line = False
         while current_token_index + 1 < len(self.all_tokens):
             current_token_value = self.all_tokens[current_token_index].token_value
-            current_token = self.all_tokens[current_token_index]
 
             if was_new_line and not ("switch" in stack_influential_tokens and
                                      current_token_value in ["case", "default"]):
@@ -375,7 +373,6 @@ class Formatter:
         if self.template_data['spaces']['before_parentheses']['method_declaration']:
             current_token_index = 1
             while current_token_index + 1 < len(self.all_tokens):
-                current_token = self.all_tokens[current_token_index]
                 if self.all_tokens[current_token_index].token_value == "(" and \
                         self.all_tokens[current_token_index - 1].token_type == TokenType.NUMBER_OR_IDENTIFIERS and \
                         self.all_tokens[self.find_next_significant_token_index(current_token_index)].token_type in \
@@ -392,7 +389,7 @@ class Formatter:
                             elif self.all_tokens[current_token_index].token_value == ")":
                                 number_of_open_parentheses -= 1
                             current_token_index += 1
-                        if self.all_tokens[self.find_next_significant_token_index(current_token_index - 1)].token_value \
+                        if self.all_tokens[self.find_next_significant_token_index(current_token_index - 1)].token_value\
                                 == "{":
                             self.add_white_space(space_index)
                             current_token_index += 1
@@ -438,7 +435,6 @@ class Formatter:
                             elif self.all_tokens[current_token_index].token_value == ")":
                                 number_of_open_parentheses -= 1
                             current_token_index += 1
-                        closed_bracket_index = current_token_index - 1
                         current_token_index += 1
                         if self.all_tokens[self.find_next_significant_token_index(current_token_index)].token_value \
                                 not in ["{", "->"]:
@@ -518,14 +514,17 @@ class Formatter:
 
             if self.all_tokens[current_token_index].token_type == TokenType.NUMBER_OR_IDENTIFIERS:
                 if self.all_tokens[current_token_index + 1].token_value == '(' and \
-                        (self.all_tokens[current_token_index - 1].token_type in [TokenType.KEYWORD,
-                                                                                 TokenType.NUMBER_OR_IDENTIFIERS]
-                         or self.all_tokens[current_token_index - 1].token_value in ['>', ']']):
+                        (self.all_tokens[current_token_index - 1].token_type == TokenType.NUMBER_OR_IDENTIFIERS
+                         or self.all_tokens[current_token_index - 1].token_value in ['>', ']', 'int', 'byte', 'char',
+                                                                                     'boolean', 'short', 'long',
+                                                                                     'float', 'double']):
                     if spaces_before_method_left_brace:
-                        while self.all_tokens[current_token_index].token_value != '{':
+                        while self.all_tokens[current_token_index].token_value != ')':
                             current_token_index += 1
-                        self.add_white_space(current_token_index)
                         current_token_index += 1
+                        if self.all_tokens[current_token_index].token_value == '{':
+                            self.add_white_space(current_token_index)
+                            current_token_index += 1
 
             current_token_index += 1
 
@@ -764,7 +763,6 @@ class Formatter:
         if self.template_data['spaces']['within']['method_declaration_parentheses']:
             current_token_index = 1
             while current_token_index + 1 < len(self.all_tokens):
-                current_token = self.all_tokens[current_token_index]
                 if self.all_tokens[current_token_index].token_value == "(" and \
                         self.all_tokens[self.find_previous_significant_token_index(current_token_index)].token_type == \
                         TokenType.NUMBER_OR_IDENTIFIERS and \
@@ -783,7 +781,7 @@ class Formatter:
                                 number_of_open_parentheses -= 1
                             current_token_index += 1
                         closed_bracket_index = current_token_index - 1
-                        if self.all_tokens[self.find_next_significant_token_index(current_token_index - 1)].token_value \
+                        if self.all_tokens[self.find_next_significant_token_index(current_token_index - 1)].token_value\
                                 == "{":
                             self.add_white_space(closed_bracket_index)
                             self.add_white_space(open_bracket_index + 1)

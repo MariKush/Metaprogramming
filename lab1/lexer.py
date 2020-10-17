@@ -161,6 +161,9 @@ def can_add_comment():
 
 
 def tokenize(text):
+    global all_tokens
+    all_tokens = []
+
     global code
     code = text
     global size
@@ -170,6 +173,12 @@ def tokenize(text):
     global end_pos_of_token
     global current_row
     global current_column
+
+    start_pos_of_token = 0
+    end_pos_of_token = 0
+
+    current_row = 1
+    current_column = 0
 
     while start_pos_of_token < size:
         c = code[start_pos_of_token]
