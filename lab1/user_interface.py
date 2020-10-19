@@ -9,6 +9,10 @@ def get_files(path):
     return list(Path(path).rglob("*.java"))
 
 
+def get_files_not_rec(path):
+    return list(Path(path).glob("*.java"))
+
+
 def write_result(all_tokens, file_name):
     new_file = open(file_name, "w")
     for i in all_tokens:
@@ -115,6 +119,8 @@ python main.py -h
 
             if sys.argv[3] == '-f':
                 files = [sys.argv[4]]
+            elif sys.argv[3] == '-d':
+                files = get_files_not_rec(sys.argv[4])
             else:
                 files = get_files(sys.argv[4])
 
