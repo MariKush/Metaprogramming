@@ -519,7 +519,7 @@ class Formatter:
                         (self.all_tokens[current_token_index - 1].token_type == TokenType.NUMBER_OR_IDENTIFIERS
                          or self.all_tokens[current_token_index - 1].token_value in ['>', ']', 'int', 'byte', 'char',
                                                                                      'boolean', 'short', 'long',
-                                                                                     'float', 'double']):
+                                                                                     'float', 'double', 'void', 'new']):
                     if spaces_before_method_left_brace:
                         while self.all_tokens[current_token_index].token_value != ')':
                             current_token_index += 1
