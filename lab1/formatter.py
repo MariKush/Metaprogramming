@@ -120,7 +120,7 @@ class Formatter:
             return min_count - count
         elif count > max_count >= min_count:
             for i in range(count - max_count):
-                self.all_tokens.pop(previous_token_index + 1)
+                self.all_tokens.pop(previous_token_index)
             return max_count - count
         return 0
 
@@ -184,6 +184,54 @@ class Formatter:
                         self.find_next_significant_token_index(current_token_index),
                         self.template_data['blank_lines']['minimum']['after_class_header'],
                         self.template_data['blank_lines']['minimum']['after_class_header'])
+                    if self.template_data['wrapping_and_braces']['braces_placement']['in_class_declaration']:
+                        current_token_index += self.check_count_of_blank_lines(
+                            self.find_previous_significant_token_index(current_token_index),
+                            current_token_index, 0, 0
+                        )
+                    else:
+                        current_token_index += self.check_count_of_blank_lines(
+                            self.find_previous_significant_token_index(current_token_index),
+                            current_token_index, -1, -1
+                        )
+
+                elif len(stack_influential_tokens) > 1 and stack_influential_tokens[-2:] == ["class", "{"] and \
+                        self.all_tokens[current_token_index - 1].token_value == ')':
+                    if self.template_data['wrapping_and_braces']['braces_placement']['in_method_declaration']:
+                        current_token_index += self.check_count_of_blank_lines(
+                            self.find_previous_significant_token_index(current_token_index),
+                            current_token_index, 0, 0
+                        )
+                    else:
+                        current_token_index += self.check_count_of_blank_lines(
+                            self.find_previous_significant_token_index(current_token_index),
+                            current_token_index, -1, -1
+                        )
+
+                elif len(stack_influential_tokens) > 1 and stack_influential_tokens[-2:] == ["{", "{"]:
+                    if self.all_tokens[self.find_previous_significant_token_index(current_token_index)].token_value \
+                            == "->":
+                        if self.template_data['wrapping_and_braces']['braces_placement']['in_lambda_declaration']:
+                            current_token_index += self.check_count_of_blank_lines(
+                                self.find_previous_significant_token_index(current_token_index),
+                                current_token_index, 0, 0
+                            )
+                        else:
+                            current_token_index += self.check_count_of_blank_lines(
+                                self.find_previous_significant_token_index(current_token_index),
+                                current_token_index, -1, -1
+                            )
+                    else:
+                        if self.template_data['wrapping_and_braces']['braces_placement']['other']:
+                            current_token_index += self.check_count_of_blank_lines(
+                                self.find_previous_significant_token_index(current_token_index),
+                                current_token_index, 0, 0
+                            )
+                        else:
+                            current_token_index += self.check_count_of_blank_lines(
+                                self.find_previous_significant_token_index(current_token_index),
+                                current_token_index, -1, -1
+                            )
 
             if self.all_tokens[current_token_index].token_value in ["class", "interface", "{"]:
                 stack_influential_tokens.append(self.all_tokens[current_token_index].token_value)
@@ -257,14 +305,22 @@ class Formatter:
                         if stack_influential_tokens == ["class", "{"]:
                             if not (self.template_data['tabs_and_indents']['do_not_indent_top_level_class_members']):
                                 indent -= self.indent
+                        elif stack_influential_tokens == ["class"]:
+                            pass
                         else:
                             indent -= self.indent
+
+                    if len(stack_influential_tokens) > 1 and stack_influential_tokens[-2:] == ["switch", "{"] and \
+                            current_token_value == "}":
+                        switch_indent = 0
                     current_token_index += self.add_indent(current_token_index, indent + current_indent + switch_indent)
                     current_indent = 0
                     if current_token_value == "}":
                         if stack_influential_tokens == ["class", "{"]:
                             if not (self.template_data['tabs_and_indents']['do_not_indent_top_level_class_members']):
                                 indent += self.indent
+                        elif stack_influential_tokens == ["class"]:
+                            pass
                         else:
                             indent += self.indent
 
@@ -515,9 +571,9 @@ class Formatter:
         current_token_index = 0
         while current_token_index < len(self.all_tokens):
             if self.all_tokens[current_token_index].token_value == 'class':
-                while self.all_tokens[current_token_index].token_value != '{':
+                while self.all_tokens[current_token_index].token_value not in ['{', '\n']:
                     current_token_index += 1
-                if spaces_before_class_left_brace:
+                if spaces_before_class_left_brace and self.all_tokens[current_token_index].token_value == '{':
                     self.add_white_space(current_token_index)
                     current_token_index += 1
 

@@ -90,6 +90,12 @@
     }
   },
   "wrapping_and_braces": {
+    "braces_placement": {
+      "in_class_declaration": false,
+      "in_method_declaration": false,
+      "in_lambda_declaration": false,
+      "other": false
+    },
     "indent_case_branches": true,
     "each_case_on_separate_line": true
   },
