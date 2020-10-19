@@ -578,7 +578,7 @@ class Formatter:
                     current_token_index += 1
 
             if self.all_tokens[current_token_index].token_type == TokenType.NUMBER_OR_IDENTIFIERS:
-                if self.all_tokens[current_token_index + 1].token_value == '(' and \
+                if self.all_tokens[self.find_next_significant_token_index(current_token_index)].token_value == '(' and \
                         (self.all_tokens[current_token_index - 1].token_type == TokenType.NUMBER_OR_IDENTIFIERS
                          or self.all_tokens[current_token_index - 1].token_value in ['>', ']', 'int', 'byte', 'char',
                                                                                      'boolean', 'short', 'long',
