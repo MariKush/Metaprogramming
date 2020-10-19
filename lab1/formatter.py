@@ -245,6 +245,13 @@ class Formatter:
                         current_token_index += self.add_indent(current_token_index, indent + current_indent +
                                                                switch_indent)
 
+                elif self.all_tokens[current_token_index].token_type == TokenType.NUMBER_OR_IDENTIFIERS and \
+                        self.all_tokens[current_token_index + 1].token_value == ":":
+                    label_indent = self.template_data['tabs_and_indents']['label_indent']
+                    if not self.template_data['tabs_and_indents']['absolute_label_indent']:
+                        label_indent += indent + current_indent + switch_indent
+                    current_token_index += self.add_indent(current_token_index, label_indent)
+
                 else:
                     if current_token_value == "}":
                         if stack_influential_tokens == ["class", "{"]:
@@ -390,7 +397,7 @@ class Formatter:
                             elif self.all_tokens[current_token_index].token_value == ")":
                                 number_of_open_parentheses -= 1
                             current_token_index += 1
-                        if self.all_tokens[self.find_next_significant_token_index(current_token_index - 1)].token_value \
+                        if self.all_tokens[self.find_next_significant_token_index(current_token_index - 1)].token_value\
                                 == "{":
                             self.add_white_space(space_index)
                             current_token_index += 1

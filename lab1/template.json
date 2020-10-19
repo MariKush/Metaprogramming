@@ -3,7 +3,9 @@
     "use_tab_character": false,
     "indent": 4,
     "keep_indents_on_empty_lines": false,
-    "do_not_indent_top_level_class_members": false
+    "do_not_indent_top_level_class_members": false,
+    "label_indent": 0,
+    "absolute_label_indent": false
   },
   "spaces": {
     "before_parentheses":{
