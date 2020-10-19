@@ -197,8 +197,9 @@ class Formatter:
                         current_token_index,
                         self.template_data['blank_lines']['minimum']['before_class_end'],
                         self.template_data['blank_lines']['minimum']['before_class_end'])
+
                     if self.find_next_significant_token_index(current_token_index) != -1:
-                        current_token_index += self.check_count_of_blank_lines(
+                        self.check_count_of_blank_lines(
                             current_token_index,
                             self.find_next_significant_token_index(current_token_index),
                             self.template_data['blank_lines']['minimum']['around_class'],
@@ -318,7 +319,7 @@ class Formatter:
                     if self.template_data['wrapping_and_braces']['each_case_on_separate_line']:
                         self.add_new_line_if_necessary(current_token_index)
                     else:
-                        if self.all_tokens[self.find_next_significant_token_index(current_token_index)].token_value\
+                        if self.all_tokens[self.find_next_significant_token_index(current_token_index)].token_value \
                                 not in ["case", "default"]:
                             self.add_new_line_if_necessary(current_token_index)
                         else:
@@ -389,7 +390,7 @@ class Formatter:
                             elif self.all_tokens[current_token_index].token_value == ")":
                                 number_of_open_parentheses -= 1
                             current_token_index += 1
-                        if self.all_tokens[self.find_next_significant_token_index(current_token_index - 1)].token_value\
+                        if self.all_tokens[self.find_next_significant_token_index(current_token_index - 1)].token_value \
                                 == "{":
                             self.add_white_space(space_index)
                             current_token_index += 1
@@ -444,8 +445,9 @@ class Formatter:
 
     def add_spaces_around_operators(self):
         current_token_index = 0
-        while current_token_index < len(self.all_tokens):
-            if self.all_tokens[current_token_index].token_value in self.around_operators:
+        while current_token_index + 1 < len(self.all_tokens):
+            if self.all_tokens[current_token_index].token_value in self.around_operators and \
+                    self.all_tokens[current_token_index + 1].token_value != ";":
                 self.add_white_space(current_token_index)
                 self.add_white_space(current_token_index + 2)
                 current_token_index += 2
@@ -781,7 +783,7 @@ class Formatter:
                                 number_of_open_parentheses -= 1
                             current_token_index += 1
                         closed_bracket_index = current_token_index - 1
-                        if self.all_tokens[self.find_next_significant_token_index(current_token_index - 1)].token_value\
+                        if self.all_tokens[self.find_next_significant_token_index(current_token_index - 1)].token_value \
                                 == "{":
                             self.add_white_space(closed_bracket_index)
                             self.add_white_space(open_bracket_index + 1)
