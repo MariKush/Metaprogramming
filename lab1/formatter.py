@@ -314,6 +314,10 @@ class Formatter:
                             current_token_value == "}":
                         switch_indent = 0
                     current_token_index += self.add_indent(current_token_index, indent + current_indent + switch_indent)
+                    if self.all_tokens[self.find_previous_significant_token_index(current_token_index)].token_value \
+                            in ["(", "+", "-"]:
+                        current_token_index += self.add_indent(current_token_index,
+                            self.template_data['tabs_and_indents']['continuation_indent'])
                     current_indent = 0
                     if current_token_value == "}":
                         if stack_influential_tokens == ["class", "{"]:

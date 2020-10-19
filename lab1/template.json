@@ -2,6 +2,7 @@
   "tabs_and_indents": {
     "use_tab_character": false,
     "indent": 4,
+    "continuation_indent": 8,
     "keep_indents_on_empty_lines": false,
     "do_not_indent_top_level_class_members": false,
     "label_indent": 0,
