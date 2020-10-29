@@ -45,7 +45,7 @@ contextual_keywords = [
     "where", "yield"
 ]
 
-separators = ["(", ")", "{", "}", "[", "]", ";", ",", ".", "@"]
+separators = ["(", ")", "{", "}", "[", "]", ";", ",", ".", "@", "#"]
 
 operators = [["??=", ">>=", "<<="],
              ["??", "=>", "==", ">=", "<=", "!=", "&&", "||", "++", "--", "<<", ">>", "..",
@@ -116,7 +116,7 @@ def add_string(quotes):
 
 
 def is_char_of_number_or_identifiers(char):
-    return char.isdigit() or char.isalpha() or char == '.' or char == '_'  # TODO remove dot
+    return char.isdigit() or char.isalpha() or char == '_' 
 
 
 def add_number_or_identifiers():
@@ -138,19 +138,15 @@ def add_number_or_identifiers():
 def add_if_is_operator():
     global end_pos_of_token
 
-    if code[start_pos_of_token: start_pos_of_token + 4] in operators[0]:
-        end_pos_of_token = start_pos_of_token + 4
-        add_token(TokenType.OPERATOR)
-        return True
-    elif code[start_pos_of_token: start_pos_of_token + 3] in operators[1]:
+    if code[start_pos_of_token: start_pos_of_token + 3] in operators[0]:
         end_pos_of_token = start_pos_of_token + 3
         add_token(TokenType.OPERATOR)
         return True
-    elif code[start_pos_of_token: start_pos_of_token + 2] in operators[2]:
+    elif code[start_pos_of_token: start_pos_of_token + 2] in operators[1]:
         end_pos_of_token = start_pos_of_token + 2
         add_token(TokenType.OPERATOR)
         return True
-    elif code[start_pos_of_token: start_pos_of_token + 1] in operators[3]:
+    elif code[start_pos_of_token: start_pos_of_token + 1] in operators[2]:
         end_pos_of_token = start_pos_of_token + 1
         add_token(TokenType.OPERATOR)
         return True
@@ -232,7 +228,7 @@ def tokenize(text):
             pass
 
         else:
-            print("Unexpected token: " + c)
+            print("Unexpected token: " + c + " with position ", current_row, ":", current_column)
             start_pos_of_token += 1
 
     return all_tokens
