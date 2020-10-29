@@ -317,7 +317,8 @@ class Formatter:
                     if self.all_tokens[self.find_previous_significant_token_index(current_token_index)].token_value \
                             in ["(", "+", "-"]:
                         current_token_index += self.add_indent(current_token_index,
-                            self.template_data['tabs_and_indents']['continuation_indent'])
+                                                               self.template_data['tabs_and_indents'][
+                                                                   'continuation_indent'])
                     current_indent = 0
                     if current_token_value == "}":
                         if stack_influential_tokens == ["class", "{"]:
@@ -334,6 +335,7 @@ class Formatter:
 
             elif current_token_value in ["for", "try", "if", "else", "while", "do", "switch", "class"]:
                 stack_influential_tokens.append(current_token_value)
+                current_indent = self.indent
 
             elif current_token_value == "{":
                 if len(stack_influential_tokens) == 1 and stack_influential_tokens[0] == "class":
@@ -457,7 +459,7 @@ class Formatter:
                             elif self.all_tokens[current_token_index].token_value == ")":
                                 number_of_open_parentheses -= 1
                             current_token_index += 1
-                        if self.all_tokens[self.find_next_significant_token_index(current_token_index - 1)].token_value\
+                        if self.all_tokens[self.find_next_significant_token_index(current_token_index - 1)].token_value \
                                 == "{":
                             self.add_white_space(space_index)
                             current_token_index += 1

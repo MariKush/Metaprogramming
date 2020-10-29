@@ -130,6 +130,7 @@ python main.py -h
                     file = open(filename, encoding='utf-8', errors='ignore')
                     code = file.read()
                     all_tokens = tokenize(code)
+                    print(all_tokens)
                     formatter = Formatter(all_tokens.copy(), template_name)
                     all_tokens_after_formatting = formatter.formatting()
 
