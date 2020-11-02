@@ -116,7 +116,7 @@ def add_string(quotes):
 
 
 def is_char_of_number_or_identifiers(char):
-    return char.isdigit() or char.isalpha() or char == '_' 
+    return char.isdigit() or char.isalpha() or char == '_'
 
 
 def add_number_or_identifiers():
