@@ -68,11 +68,12 @@ class Token:
     def __init__(self, token_type, token_value, row, column):
         self.token_type = token_type
         self.token_value = token_value
+        self.correct_token_value = token_value
         self.row = row
         self.column = column
 
     def __repr__(self):
-        return f'{self.token_type} {self.token_value} {self.row} {self.column}'
+        return f'{self.token_type} {self.token_value} {self.correct_token_value} {self.row} {self.column}'
 
 
 def add_space(c):

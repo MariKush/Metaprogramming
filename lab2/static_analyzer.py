@@ -34,15 +34,44 @@ class StaticAnalyzer:
     def __init__(self, files):
         self.files = files
 
-    # MyPascal
+    # PascalCase
     def validate_pascal_case(self, token):
+        print("validate_pascal_case ", token)
+        index = 1
+        while index < len(token.correct_token_value):
+            if token.correct_token_value[index] == '_' and index + 1 < len(token.correct_token_value):
+                if token.correct_token_value[index] == '_' and token.correct_token_value[index + 1] == '_':
+                    token.correct_token_value = token.correct_token_value.replace('_', '', 1)
+                    index -= 1
+                else:
+                    token.correct_token_value = token.correct_token_value[:index] + \
+                                                token.correct_token_value[index + 1].upper() + \
+                                                token.correct_token_value[index + 2:]
+            index += 1
+        token.correct_token_value = token.correct_token_value.replace('_', '')
+        token.correct_token_value = token.correct_token_value.capitalize()
         print("validate_pascal_case ", token)
 
     def validate_interface(self, token):
         print("validate_interface ", token)
 
+
     def validate_camel_case(self, token):
         print("validate_camel_case", token)
+        index = 1
+        while index < len(token.correct_token_value):
+            if token.correct_token_value[index] == '_' and index + 1 < len(token.correct_token_value):
+                if token.correct_token_value[index] == '_' and token.correct_token_value[index + 1] == '_':
+                    token.correct_token_value = token.correct_token_value.replace('_', '', 1)
+                    index -= 1
+                else:
+                    token.correct_token_value = token.correct_token_value[:index] + \
+                                                token.correct_token_value[index + 1].upper() + \
+                                                token.correct_token_value[index + 2:]
+            index += 1
+        token.correct_token_value = token.correct_token_value.replace('_', '')
+        token.correct_token_value = token.correct_token_value[0].lower() + token.correct_token_value[1:]
+        print("validate_camel_case ", token)
 
     def validate_names(self, file):
         stack_influential_tokens = []
@@ -99,7 +128,7 @@ class StaticAnalyzer:
                          previous_significant_token.token_type == TokenType.NUMBER_OR_IDENTIFIERS or
                          previous_significant_token.token_value in keyword_type_value) and \
                         next_significant_token.token_value in [';', '=']:
-                    self.validate_camel_case(current_token) # object references in method
+                    self.validate_camel_case(current_token)  # object references in method
 
     def analyze(self):
         for file in self.files:
