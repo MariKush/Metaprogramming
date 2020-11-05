@@ -49,10 +49,18 @@ class StaticAnalyzer:
                                                 token.correct_token_value[index + 2:]
             index += 1
         token.correct_token_value = token.correct_token_value.replace('_', '')
-        token.correct_token_value = token.correct_token_value.capitalize()
+        token.correct_token_value = token.correct_token_value[0].upper() + token.correct_token_value[1:]
         print("validate_pascal_case ", token)
 
     def validate_interface(self, token):
+        print("validate_interface ", token)
+        self.validate_pascal_case(token)
+        if token.correct_token_value[0] != 'I':
+            token.correct_token_value = 'I' + token.correct_token_value
+        else:
+            token.correct_token_value = token.correct_token_value[0] + \
+                                        token.correct_token_value[1].upper() + \
+                                        token.correct_token_value[2:]
         print("validate_interface ", token)
 
 
