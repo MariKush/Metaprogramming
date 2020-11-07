@@ -19,7 +19,8 @@ def find_next_significant_token_index(file, index):
     return index
 
 
-keyword_type_value = ('int', 'short', 'bool', 'string', 'void')  # TODO
+keyword_type_value = ('int', 'short', 'bool', 'string', 'void', 'char', 'ulong', 'byte', 'decimal', 'double',
+                      'sbyte', 'float', 'long', 'uint', 'ushort')
 
 
 class File:
@@ -231,11 +232,30 @@ class StaticAnalyzer:
         while file.all_tokens[index].token_value != '\n':
             index -= 1
 
-        print(indent)
         self.add_documented_comment(file, index, correct_documentation, indent, row)
 
         while True:
             if file.all_tokens[index].correct_token_value == class_name:
+                return index
+            index += 1
+
+    def validate_doc_property_comment(self, property_name_index, file):
+        property_name = file.all_tokens[property_name_index].correct_token_value
+        index = property_name_index
+        correct_documentation, indent, row, index = self.get_valid_documentation(file, index)
+
+        if correct_documentation.find('<summary>') == -1:
+            correct_documentation = '<summary>\n' + property_name + \
+                                    ' property description here\n</summary>' + correct_documentation
+
+        index = find_next_significant_token_index(file, index)
+        while file.all_tokens[index].token_value != '\n':
+            index -= 1
+
+        self.add_documented_comment(file, index, correct_documentation, indent, row)
+
+        while True:
+            if file.all_tokens[index].correct_token_value == property_name:
                 return index
             index += 1
 
@@ -255,10 +275,23 @@ class StaticAnalyzer:
                     stack_influential_tokens.pop()
 
             if current_token.token_type == TokenType.NUMBER_OR_IDENTIFIERS:
+                previous_significant_token = file.all_tokens[find_previous_significant_token_index(file, index)]
+                next_significant_token = file.all_tokens[find_next_significant_token_index(file, index)]
                 if len(stack_influential_tokens) > 0 and stack_influential_tokens[-1].token_value in ['enum',
                                                                                                       'class',
                                                                                                       'interface']:
                     self.validate_doc_class_comment(index, stack_influential_tokens[-1].token_value, file)
+                elif len(stack_influential_tokens) > 1 and stack_influential_tokens[-1].token_value == '{' and \
+                        stack_influential_tokens[-2].token_value in ['class', 'interface', 'enum'] and \
+                        (previous_significant_token.token_value in ['>', ']'] or
+                         previous_significant_token.token_type == TokenType.NUMBER_OR_IDENTIFIERS or
+                         previous_significant_token.token_value in keyword_type_value):
+                    if next_significant_token.token_value == '(':
+                        self.validate_pascal_case(current_token)  # methods todo
+                    if next_significant_token.token_value == '{':
+                        self.validate_doc_property_comment(index, file)  # properties
+                    elif next_significant_token.token_value in [';', '=']:
+                        self.validate_camel_case(current_token)  # object references todo
             index += 1
 
     def analyze(self):
