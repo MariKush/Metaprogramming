@@ -36,7 +36,6 @@ class StaticAnalyzer:
 
     # PascalCase
     def validate_pascal_case(self, token):
-        print("validate_pascal_case ", token)
         index = 1
         while index < len(token.correct_token_value):
             if token.correct_token_value[index] == '_' and index + 1 < len(token.correct_token_value):
@@ -50,10 +49,8 @@ class StaticAnalyzer:
             index += 1
         token.correct_token_value = token.correct_token_value.replace('_', '')
         token.correct_token_value = token.correct_token_value[0].upper() + token.correct_token_value[1:]
-        print("validate_pascal_case ", token)
 
     def validate_interface(self, token):
-        print("validate_interface ", token)
         self.validate_pascal_case(token)
         if token.correct_token_value[0] != 'I':
             token.correct_token_value = 'I' + token.correct_token_value
@@ -61,11 +58,8 @@ class StaticAnalyzer:
             token.correct_token_value = token.correct_token_value[0] + \
                                         token.correct_token_value[1].upper() + \
                                         token.correct_token_value[2:]
-        print("validate_interface ", token)
-
 
     def validate_camel_case(self, token):
-        print("validate_camel_case", token)
         index = 1
         while index < len(token.correct_token_value):
             if token.correct_token_value[index] == '_' and index + 1 < len(token.correct_token_value):
@@ -79,7 +73,6 @@ class StaticAnalyzer:
             index += 1
         token.correct_token_value = token.correct_token_value.replace('_', '')
         token.correct_token_value = token.correct_token_value[0].lower() + token.correct_token_value[1:]
-        print("validate_camel_case ", token)
 
     def validate_names(self, file):
         stack_influential_tokens = []
@@ -107,7 +100,7 @@ class StaticAnalyzer:
                 next_significant_token = file.all_tokens[find_next_significant_token_index(file, index)]
                 if len(stack_influential_tokens) > 0 and stack_influential_tokens[-1].token_value in \
                         ['namespace', 'enum']:
-                    self.validate_pascal_case(current_token)  # namespaces, classes, enums
+                    self.validate_pascal_case(current_token)  # namespaces, enums
                 elif len(stack_influential_tokens) > 1 and previous_significant_token.token_value == 'class':
                     self.validate_pascal_case(current_token)  # classes
                 elif len(stack_influential_tokens) > 0 and stack_influential_tokens[-1].token_value == 'interface':
@@ -138,6 +131,84 @@ class StaticAnalyzer:
                         next_significant_token.token_value in [';', '=']:
                     self.validate_camel_case(current_token)  # object references in method
 
+
+    def validate_doc_text(self, text):
+        result = ''
+        try:
+            stack = []
+            index = 0
+            while index < len(text):
+                if text[index] == '<':
+                    start_pos_of_token = index
+                    index += 1
+                    if text[index] == '/':
+                        while index < len(text):
+                            if text[index] == '>':
+                                if text[start_pos_of_token + 2:index] == stack[-1][0][1:stack[-1][0].find(' ')]:
+                                    if len(stack) > 1:
+                                        stack[-2][1] += stack[-1][0] + stack[-1][1] + \
+                                                        text[start_pos_of_token:index + 1]
+                                    else:
+                                        result += stack[-1][0] + stack[-1][1] + text[start_pos_of_token:index + 1] + \
+                                                  '\n'
+                                stack.pop()
+                                break
+                            index += 1
+                    else:
+                        index = text.find('>', index)
+                        stack.append([text[start_pos_of_token:index + 1], ''])
+                elif len(stack) > 0:
+                    stack[-1][1] += text[index]
+
+                index += 1
+
+            return result
+        except Exception as e:
+            print(e)
+            return result
+
+    # class, interface, enum
+    def validate_doc_class_comment(self, class_name_index, class_type, file):
+        index = class_name_index
+        document_comments = []
+
+        while file.all_tokens[index].token_value not in ['{', '}', ';']:
+            if file.all_tokens[index].token_value[:3] == '///':
+                document_comments.insert(0, file.all_tokens[index].token_value)
+            index -= 1
+
+        document_comments_text = ''
+        for line in document_comments:
+            if len(document_comments_text) > 0:
+                document_comments_text += '\n'
+            document_comments_text += line[3:]
+
+        correct_documentation = self.validate_doc_text(document_comments_text)
+        print(document_comments_text)
+        print('-')
+        print(correct_documentation)
+
+    def validate_documentation(self, file):
+        stack_influential_tokens = []
+        for index in range(len(file.all_tokens)):
+            current_token = file.all_tokens[index]
+            if current_token.token_value in ['class', 'enum', 'namespace', 'interface', '{', '[']:
+                stack_influential_tokens.append(current_token)
+            elif current_token.token_value == ']':
+                stack_influential_tokens.pop()
+            elif current_token.token_value == '}':
+                stack_influential_tokens.pop()
+                if len(stack_influential_tokens) > 0 and stack_influential_tokens[-1].token_value in \
+                        ['class', 'enum', 'namespace', 'interface']:
+                    stack_influential_tokens.pop()
+
+            if current_token.token_type == TokenType.NUMBER_OR_IDENTIFIERS:
+                if len(stack_influential_tokens) > 0 and stack_influential_tokens[-1].token_value in ['enum',
+                                                                                                      'class',
+                                                                                                      'interface']:
+                    self.validate_doc_class_comment(index, stack_influential_tokens[-1].token_value, file)
+
     def analyze(self):
         for file in self.files:
             self.validate_names(file)
+            self.validate_documentation(file)
