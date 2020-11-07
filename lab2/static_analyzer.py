@@ -173,7 +173,7 @@ class StaticAnalyzer:
         document_comments = []
         while file.all_tokens[index].correct_token_value not in ['{', '}', ';']:
             if file.all_tokens[index].correct_token_value[:3] == '///':
-                indent = file.all_tokens[index].column - 1  # TODO fix me
+                indent = file.all_tokens[index].column - 1
                 row = file.all_tokens[index].row
                 document_comments.insert(0, file.all_tokens[index].correct_token_value)
                 file.all_tokens.pop(index)
@@ -188,6 +188,8 @@ class StaticAnalyzer:
 
             index -= 1
 
+        if indent == 0:
+            indent = file.all_tokens[find_next_significant_token_index(file, index)].column - 1
         document_comments_text = ''
         for line in document_comments:
             if len(document_comments_text) > 0:
@@ -204,14 +206,14 @@ class StaticAnalyzer:
             index += 1
             for i in range(indent):
                 file.all_tokens.insert(index, Token(TokenType.WHITE_SPACE, ' ', None, None))
-                index += indent
+                index += 1
 
             curr_index = 0
             while curr_index < len(doc_line) and doc_line[curr_index].isspace():
                 curr_index += 1
             comment_str = '/// ' + doc_line[curr_index:]
             file.all_tokens.insert(index, Token(TokenType.COMMENT, comment_str, row, indent + 1))
-            index+=1
+            index += 1
             file.all_tokens.insert(index, Token(TokenType.WHITE_SPACE, '\n', None, None))
             row += 1
 
@@ -219,26 +221,23 @@ class StaticAnalyzer:
     def validate_doc_class_comment(self, class_name_index, class_type, file):
         class_name = file.all_tokens[class_name_index].correct_token_value
         index = class_name_index
-        print(index)
         correct_documentation, indent, row, index = self.get_valid_documentation(file, index)
-        print(index)
 
         if correct_documentation.find('<summary>') == -1:
-            correct_documentation = '<summary>\n' + \
-                                    file.all_tokens[class_name_index].token_value + \
+            correct_documentation = '<summary>\n' + class_name + \
                                     f' {class_type} description here\n</summary>' + correct_documentation
 
-        print(correct_documentation)
-        print(correct_documentation)
         index = find_next_significant_token_index(file, index)
         while file.all_tokens[index].token_value != '\n':
             index -= 1
 
-        print(index)
+        print(indent)
         self.add_documented_comment(file, index, correct_documentation, indent, row)
-        print(index)
 
-        return
+        while True:
+            if file.all_tokens[index].correct_token_value == class_name:
+                return index
+            index += 1
 
     def validate_documentation(self, file):
         stack_influential_tokens = []
