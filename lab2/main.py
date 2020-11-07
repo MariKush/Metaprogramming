@@ -21,10 +21,10 @@ def write_result(all_tokens, file_name):
 
 analyze = StaticAnalyzer([File('Test.cs')])
 analyze.analyze()
-#
-# for filename in get_files("C:\\Users\\Dell-admin\\Desktop\\Fleck-master\\src\\Fleck"):
-#     file = open(filename)
-#     print(filename)
-#     all_tokens = tokenize(file.read())
-#
-#     # print(all_tokens)
+
+for _file in analyze.files:
+    file = open(_file.path, mode='w', encoding='utf-8')
+    for token in _file.all_tokens:
+        file.write(token.correct_token_value)
+
+    # print(all_tokens)
