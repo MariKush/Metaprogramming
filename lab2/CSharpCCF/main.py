@@ -6,7 +6,7 @@ from pathlib import Path
 from .lexer import TokenType
 from .static_analyzer import StaticAnalyzer, File
 
-__version__ = "0.1.10"
+__version__ = "0.2.1"
 
 
 def get_files(path):
@@ -18,7 +18,7 @@ def get_files_not_rec(path):
 
 
 def write_result(all_tokens, file_name):
-    new_file = open(file_name, "w")
+    new_file = open(file_name, "w", encoding='utf-8')
     for token in all_tokens:
         new_file.write(token.correct_token_value)
 
