@@ -42,7 +42,7 @@ def verify(files):
 def fix(files):
     for file in files:
         head, tail = os.path.split(file.path)
-        logging.basicConfig(filename="../fixing.log")
+        logging.basicConfig(filename="fixing.log")
         error_id = 0
         for token in file.all_tokens:
             if token.token_type != TokenType.WHITE_SPACE and \
@@ -53,6 +53,7 @@ def fix(files):
                     error_type = "Fix name"
                 error_id += 1
                 logging.warning(str(error_id) + " " + tail + " " + str(token.row) + " " + error_type + " " + str(token))
+        write_result(file.all_tokens, file.path)
 
 
 def main():
