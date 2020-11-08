@@ -165,7 +165,6 @@ class StaticAnalyzer:
 
             return result
         except Exception as e:
-            print(e)
             return result
 
     def get_valid_documentation(self, file, index):
@@ -202,7 +201,6 @@ class StaticAnalyzer:
 
     def add_documented_comment(self, file, index, correct_documentation, indent, row):
         document_comments = correct_documentation.split('\n')
-        print(correct_documentation)
         for doc_line in document_comments:
             index += 1
             for i in range(indent):
@@ -239,15 +237,13 @@ class StaticAnalyzer:
                 return index
             index += 1
 
-    def validate_doc_method_comment(self, name_index, file):  # TODO
+    def validate_doc_method_comment(self, name_index, file):
         name = file.all_tokens[name_index].correct_token_value
-        print(file.all_tokens[name_index])
         index = name_index
 
         param_index = name_index
         params = []
         while file.all_tokens[param_index].token_value != '(':
-            print(file.all_tokens[param_index].token_value)
             param_index += 1
         while file.all_tokens[param_index].token_value != ')':
             if file.all_tokens[param_index + 1].token_value in [',', ')']:
