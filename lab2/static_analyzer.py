@@ -109,10 +109,6 @@ class StaticAnalyzer:
                 elif len(stack_influential_tokens) > 1 and stack_influential_tokens[-1].token_value == '{' and \
                         stack_influential_tokens[-2] == 'enum':
                     self.validate_pascal_case(current_token)  # enum values
-                # elif len(stack_influential_tokens) > 2 and stack_influential_tokens[-1].token_value == '[':
-                #     if not (stack_influential_tokens[-2].token_value == '{' and
-                #             stack_influential_tokens[-3].token_value == '{'):
-                #         self.validate_pascal_case(current_token)
                 elif len(stack_influential_tokens) > 1 and stack_influential_tokens[-1].token_value == '{' and \
                         stack_influential_tokens[-2].token_value in ['class', 'interface'] and \
                         (previous_significant_token.token_value in ['>', ']'] or
