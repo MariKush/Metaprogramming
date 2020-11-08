@@ -219,14 +219,14 @@ class StaticAnalyzer:
             row += 1
 
     # class, interface, enum
-    def validate_doc_type_comment(self, name_index, type, file):
+    def validate_doc_type_comment(self, name_index, word_type, file):
         name = file.all_tokens[name_index].correct_token_value
         index = name_index
         correct_documentation, indent, row, index = self.get_valid_documentation(file, index)
 
         if correct_documentation.find('<summary>') == -1:
             correct_documentation = '<summary>\n' + name + \
-                                    f' {type} description here\n</summary>' + correct_documentation
+                                    f' {word_type} description here\n</summary>' + correct_documentation
 
         index = find_next_significant_token_index(file, index)
         while file.all_tokens[index].token_value != '\n':
@@ -239,6 +239,49 @@ class StaticAnalyzer:
                 return index
             index += 1
 
+    def validate_doc_method_comment(self, name_index, file):  # TODO
+        name = file.all_tokens[name_index].correct_token_value
+        print(file.all_tokens[name_index])
+        index = name_index
+
+        param_index = name_index
+        params = []
+        while file.all_tokens[param_index].token_value != '(':
+            print(file.all_tokens[param_index].token_value)
+            param_index += 1
+        while file.all_tokens[param_index].token_value != ')':
+            if file.all_tokens[param_index + 1].token_value in [',', ')']:
+                params.append(file.all_tokens[param_index].correct_token_value)
+            param_index += 1
+
+        correct_documentation, indent, row, index = self.get_valid_documentation(file, index)
+
+        if correct_documentation.find('<summary>') == -1:
+            correct_documentation = '<summary>\n' + name + \
+                                    ' method description here\n</summary>\n' + correct_documentation
+
+        corr_index = 0
+        pattern = '<param name="'
+        while corr_index + len(pattern) < len(correct_documentation):
+            if correct_documentation[corr_index:corr_index+len(pattern)] == pattern:
+                corr_index = corr_index+len(pattern)
+                start_of_name = corr_index
+                while correct_documentation[corr_index] != '"':
+                    corr_index += 1
+                name = correct_documentation[start_of_name:corr_index]
+                if name in params:
+                    params.pop(params.index(name))
+            corr_index += 1
+
+        for param in params:
+            correct_documentation = correct_documentation + '\n' + pattern + param + \
+                                    '"> parameter description here </param>'
+
+        index = find_next_significant_token_index(file, index)
+        while file.all_tokens[index].token_value != '\n':
+            index -= 1
+
+        self.add_documented_comment(file, index, correct_documentation, indent, row)
 
     def validate_documentation(self, file):
         stack_influential_tokens = []
@@ -268,7 +311,7 @@ class StaticAnalyzer:
                          previous_significant_token.token_type == TokenType.NUMBER_OR_IDENTIFIERS or
                          previous_significant_token.token_value in keyword_type_value):
                     if next_significant_token.token_value == '(':
-                        self.validate_pascal_case(current_token)  # methods todo
+                        self.validate_doc_method_comment(index, file)  # methods
                     if next_significant_token.token_value == '{':
                         self.validate_doc_type_comment(index, 'property', file)  # properties
                     elif next_significant_token.token_value in [';', '=']:
