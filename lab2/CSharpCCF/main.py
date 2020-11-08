@@ -3,8 +3,10 @@ import os
 import sys
 from pathlib import Path
 
-from lexer import TokenType
-from static_analyzer import StaticAnalyzer, File
+from .lexer import TokenType
+from .static_analyzer import StaticAnalyzer, File
+
+__version__ = "0.1.10"
 
 
 def get_files(path):
@@ -40,7 +42,7 @@ def verify(files):
 def fix(files):
     for file in files:
         head, tail = os.path.split(file.path)
-        logging.basicConfig(filename="fixing.log")
+        logging.basicConfig(filename="../fixing.log")
         error_id = 0
         for token in file.all_tokens:
             if token.token_type != TokenType.WHITE_SPACE and \
@@ -98,5 +100,3 @@ def main():
                 fix(my_files)
             else:
                 print("Mode error")
-
-main()

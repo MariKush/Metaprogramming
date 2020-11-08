@@ -1,4 +1,4 @@
-from lexer import tokenize, TokenType, Token
+from .lexer import tokenize, TokenType, Token
 
 
 def find_previous_significant_token_index(file, index):
