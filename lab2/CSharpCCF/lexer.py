@@ -102,13 +102,13 @@ def add_token(token_type):
     start_pos_of_token = end_pos_of_token
 
 
-def add_string(quotes):
+def add_string(quotes, was_dog):
     global end_pos_of_token
 
     end_pos_of_token = start_pos_of_token + 1
 
     while code[end_pos_of_token] != quotes:
-        if code[end_pos_of_token] == '\\':
+        if not was_dog and code[end_pos_of_token] == '\\':
             end_pos_of_token += 1
         end_pos_of_token += 1
 
@@ -213,7 +213,7 @@ def tokenize(text):
             add_space(c)
 
         elif c in ("'", '"'):
-            add_string(c)
+            add_string(c, code[start_pos_of_token - 1] == '@')
 
         elif c == "/" and can_add_comment():
             pass

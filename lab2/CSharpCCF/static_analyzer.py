@@ -170,6 +170,7 @@ class StaticAnalyzer:
             return result
 
     def get_valid_documentation(self, file, index):
+        name_index = index
         indent = 0
         row = 0
         document_comments = []
@@ -179,16 +180,22 @@ class StaticAnalyzer:
                 row = file.all_tokens[index].row
                 document_comments.insert(0, file.all_tokens[index].correct_token_value)
                 file.all_tokens.pop(index)
+                name_index -= 1
                 index -= 1
                 while file.all_tokens[index].correct_token_value in [' ', '\t']:
                     file.all_tokens.pop(index)
+                    name_index -= 1
                     index -= 1
                 if file.all_tokens[index].correct_token_value == '\n':
                     file.all_tokens.pop(index)
+                    name_index -= 1
                     index -= 1
                 index += 1
 
             index -= 1
+
+        while file.all_tokens[index].token_value != '\n':
+            index += 1
 
         if indent == 0:
             indent = file.all_tokens[find_next_significant_token_index(file, index)].column - 1
@@ -199,9 +206,9 @@ class StaticAnalyzer:
             document_comments_text += line[3:]
 
         correct_documentation = self.validate_doc_text(document_comments_text)
-        return correct_documentation, indent, row, index, document_comments
+        return correct_documentation, indent, row, index, document_comments, name_index
 
-    def add_documented_comment(self, file, index, correct_documentation, indent, row, comments_before):
+    def add_documented_comment(self, file, index, correct_documentation, indent, row, comments_before, name_index):
         ind = 0
         document_comments = correct_documentation.split('\n')
         for doc_line in document_comments:
@@ -209,25 +216,30 @@ class StaticAnalyzer:
             for i in range(indent):
                 file.all_tokens.insert(index, Token(TokenType.WHITE_SPACE, ' ', None, None))
                 index += 1
+                name_index += 1
 
             curr_index = 0
             while curr_index < len(doc_line) and doc_line[curr_index].isspace():
                 curr_index += 1
             comment_str = '/// ' + doc_line[curr_index:]
             file.all_tokens.insert(index, Token(TokenType.COMMENT, "", row, indent + 1))
+            name_index += 1
             if ind < len(comments_before):
                 file.all_tokens[index].token_value = comments_before[ind]
             file.all_tokens[index].correct_token_value = comment_str
             index += 1
             file.all_tokens.insert(index, Token(TokenType.WHITE_SPACE, '\n', None, None))
+            name_index += 1
             row += 1
             ind += 1
+        return name_index
 
     # class, interface, enum
     def validate_doc_type_comment(self, name_index, word_type, file):
         name = file.all_tokens[name_index].correct_token_value
         index = name_index
-        correct_documentation, indent, row, index, document_comments = self.get_valid_documentation(file, index)
+        correct_documentation, indent, row, index, document_comments, name_index \
+            = self.get_valid_documentation(file, index)
 
         if correct_documentation.find('<summary>') == -1:
             correct_documentation = '<summary>\n' + name + \
@@ -237,12 +249,13 @@ class StaticAnalyzer:
         while file.all_tokens[index].token_value != '\n':
             index -= 1
 
-        self.add_documented_comment(file, index, correct_documentation, indent, row, document_comments)
-
-        while True:
-            if file.all_tokens[index].correct_token_value == name:
-                return index
-            index += 1
+        name_index = self.add_documented_comment(file, index, correct_documentation, indent, row, document_comments,
+                                                 name_index)
+        return name_index
+        # while True:
+        #     if file.all_tokens[index].correct_token_value == name and file.all_tokens[index + 1].token_value != '<':
+        #         return index
+        #     index += 1
 
     def validate_doc_method_comment(self, name_index, file):
         name = file.all_tokens[name_index].correct_token_value
@@ -253,11 +266,12 @@ class StaticAnalyzer:
         while file.all_tokens[param_index].token_value != '(':
             param_index += 1
         while file.all_tokens[param_index].token_value != ')':
-            if file.all_tokens[param_index + 1].token_value in [',', ')']:
+            if file.all_tokens[find_next_significant_token_index(file, param_index)].token_value in [',', ')', '='] \
+                    and file.all_tokens[param_index].token_type == TokenType.NUMBER_OR_IDENTIFIERS:
                 params.append(file.all_tokens[param_index].correct_token_value)
             param_index += 1
 
-        correct_documentation, indent, row, index, documents_comments = self.get_valid_documentation(file, index)
+        correct_documentation, indent, row, index, documents_comments, _ = self.get_valid_documentation(file, index)
 
         if correct_documentation.find('<summary>') == -1:
             correct_documentation = '<summary>\n' + name + \
@@ -266,8 +280,8 @@ class StaticAnalyzer:
         corr_index = 0
         pattern = '<param name="'
         while corr_index + len(pattern) < len(correct_documentation):
-            if correct_documentation[corr_index:corr_index+len(pattern)] == pattern:
-                corr_index = corr_index+len(pattern)
+            if correct_documentation[corr_index:corr_index + len(pattern)] == pattern:
+                corr_index = corr_index + len(pattern)
                 start_of_name = corr_index
                 while correct_documentation[corr_index] != '"':
                     corr_index += 1
@@ -284,7 +298,7 @@ class StaticAnalyzer:
         while file.all_tokens[index].token_value != '\n':
             index -= 1
 
-        self.add_documented_comment(file, index, correct_documentation, indent, row, documents_comments)
+        self.add_documented_comment(file, index, correct_documentation, indent, row, documents_comments, name_index)
 
     def validate_documentation(self, file):
         stack_influential_tokens = []
@@ -296,6 +310,7 @@ class StaticAnalyzer:
             elif current_token.token_value == ']':
                 stack_influential_tokens.pop()
             elif current_token.token_value == '}':
+                # print(current_token, stack_influential_tokens)
                 stack_influential_tokens.pop()
                 if len(stack_influential_tokens) > 0 and stack_influential_tokens[-1].token_value in \
                         ['class', 'enum', 'namespace', 'interface']:
@@ -304,10 +319,12 @@ class StaticAnalyzer:
             if current_token.token_type == TokenType.NUMBER_OR_IDENTIFIERS:
                 previous_significant_token = file.all_tokens[find_previous_significant_token_index(file, index)]
                 next_significant_token = file.all_tokens[find_next_significant_token_index(file, index)]
-                if len(stack_influential_tokens) > 0 and stack_influential_tokens[-1].token_value in ['enum',
-                                                                                                      'class',
-                                                                                                      'interface']:
-                    self.validate_doc_type_comment(index, stack_influential_tokens[-1].token_value, file)
+                if len(stack_influential_tokens) > 0 and previous_significant_token.token_value == \
+                        stack_influential_tokens[-1].token_value \
+                        and stack_influential_tokens[-1].token_value in ['enum',
+                                                                         'class',
+                                                                         'interface']:
+                    index = self.validate_doc_type_comment(index, stack_influential_tokens[-1].token_value, file)
                 elif len(stack_influential_tokens) > 1 and stack_influential_tokens[-1].token_value == '{' and \
                         stack_influential_tokens[-2].token_value in ['class', 'interface', 'enum'] and \
                         (previous_significant_token.token_value in ['>', ']'] or
@@ -316,17 +333,15 @@ class StaticAnalyzer:
                     if next_significant_token.token_value == '(':
                         self.validate_doc_method_comment(index, file)  # methods
                     if next_significant_token.token_value == '{':
-                        self.validate_doc_type_comment(index, 'property', file)  # properties
+                        index = self.validate_doc_type_comment(index, 'property', file)  # properties
+                        # if previous_significant_token.token_value == current_token.token_value:
+                        #     index += 2
                     elif next_significant_token.token_value in [';', '=']:
                         self.validate_doc_type_comment(index, 'object reference', file)  # object references
             index += 1
 
-    def file_rename(self):
-        for file in self.files:
-            validate_pascal_case(Token(None, file.name, None))
-
-
     def analyze(self):
         for file in self.files:
+            print(file.path)
             self.validate_names(file)
             self.validate_documentation(file)
