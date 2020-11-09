@@ -1,10 +1,12 @@
 import logging
 import os
 import sys
+from os import listdir
+from os.path import isfile, isdir, split, isabs
 from pathlib import Path
 
-from .lexer import TokenType
-from .static_analyzer import StaticAnalyzer, File
+from .lexer import TokenType, Token
+from .static_analyzer import StaticAnalyzer, File, validate_pascal_case
 
 __version__ = "0.2.1"
 
@@ -56,6 +58,26 @@ def fix(files):
         write_result(file.all_tokens, file.path)
 
 
+def fix_names(path):
+    if isdir(path):
+        os.chdir(path)
+        for entry in listdir():
+            fix_names(entry)
+        os.chdir('..')
+        name = split(path)[1]
+        token = Token(None, name, None, None)
+        validate_pascal_case(token)
+        os.rename(name, token.correct_token_value)
+
+    if isfile(path) and len(path) > 2 and path[-3:] == '.cs':
+        if isabs(path):
+            os.chdir(split(path)[0])
+        name = split(path)[1]
+        token = Token(None, name[:-3], None, None)
+        validate_pascal_case(token)
+        os.rename(name, token.correct_token_value + '.cs')
+
+
 def main():
     if len(sys.argv) == 1:
         print("Warning! You have entered too few arguments.")
@@ -99,5 +121,6 @@ def main():
                 verify(my_files)
             elif mode == 'f':
                 fix(my_files)
+                fix_names(sys.argv[3])
             else:
                 print("Mode error")

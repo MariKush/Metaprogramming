@@ -30,31 +30,32 @@ class File:
         self.all_tokens = tokenize(file.read())
 
 
+# PascalCase
+def validate_pascal_case(token):
+    if token.correct_token_value.isupper():
+        token.correct_token_value = token.correct_token_value.casefold()
+    index = 1
+    while index < len(token.correct_token_value):
+        if token.correct_token_value[index] == '_' and index + 1 < len(token.correct_token_value):
+            if token.correct_token_value[index] == '_' and token.correct_token_value[index + 1] == '_':
+                token.correct_token_value = token.correct_token_value.replace('_', '', 1)
+                index -= 1
+            else:
+                token.correct_token_value = token.correct_token_value[:index] + \
+                                            token.correct_token_value[index + 1].upper() + \
+                                            token.correct_token_value[index + 2:]
+        index += 1
+    token.correct_token_value = token.correct_token_value.replace('_', '')
+    token.correct_token_value = token.correct_token_value[0].upper() + token.correct_token_value[1:]
+
+
 class StaticAnalyzer:
 
     def __init__(self, files):
         self.files = files
 
-    # PascalCase
-    def validate_pascal_case(self, token):
-        if token.correct_token_value.isupper():
-            token.correct_token_value = token.correct_token_value.casefold()
-        index = 1
-        while index < len(token.correct_token_value):
-            if token.correct_token_value[index] == '_' and index + 1 < len(token.correct_token_value):
-                if token.correct_token_value[index] == '_' and token.correct_token_value[index + 1] == '_':
-                    token.correct_token_value = token.correct_token_value.replace('_', '', 1)
-                    index -= 1
-                else:
-                    token.correct_token_value = token.correct_token_value[:index] + \
-                                                token.correct_token_value[index + 1].upper() + \
-                                                token.correct_token_value[index + 2:]
-            index += 1
-        token.correct_token_value = token.correct_token_value.replace('_', '')
-        token.correct_token_value = token.correct_token_value[0].upper() + token.correct_token_value[1:]
-
     def validate_interface(self, token):
-        self.validate_pascal_case(token)
+        validate_pascal_case(token)
         if token.correct_token_value[0] != 'I':
             token.correct_token_value = 'I' + token.correct_token_value
         else:
@@ -63,7 +64,7 @@ class StaticAnalyzer:
                                         token.correct_token_value[2:]
 
     def validate_camel_case(self, token):
-        self.validate_pascal_case(token)
+        validate_pascal_case(token)
         token.correct_token_value = token.correct_token_value[0].lower() + token.correct_token_value[1:]
 
     def rename_all(self, token_for_rename):
@@ -98,17 +99,17 @@ class StaticAnalyzer:
                 next_significant_token = file.all_tokens[find_next_significant_token_index(file, index)]
                 if len(stack_influential_tokens) > 0 and stack_influential_tokens[-1].token_value in \
                         ['namespace', 'enum']:
-                    self.validate_pascal_case(current_token)  # namespaces, enums
+                    validate_pascal_case(current_token)  # namespaces, enums
                     self.rename_all(current_token)
                 elif len(stack_influential_tokens) > 1 and previous_significant_token.token_value == 'class':
-                    self.validate_pascal_case(current_token)  # classes
+                    validate_pascal_case(current_token)  # classes
                     self.rename_all(current_token)
                 elif len(stack_influential_tokens) > 0 and stack_influential_tokens[-1].token_value == 'interface':
                     self.validate_interface(current_token)  # interfaces
                     self.rename_all(current_token)
                 elif len(stack_influential_tokens) > 1 and stack_influential_tokens[-1].token_value == '{' and \
                         stack_influential_tokens[-2] == 'enum':
-                    self.validate_pascal_case(current_token)  # enum values
+                    validate_pascal_case(current_token)  # enum values
                     self.rename_all(current_token)
                 elif len(stack_influential_tokens) > 1 and stack_influential_tokens[-1].token_value == '{' and \
                         stack_influential_tokens[-2].token_value in ['class', 'interface'] and \
@@ -116,10 +117,10 @@ class StaticAnalyzer:
                          previous_significant_token.token_type == TokenType.NUMBER_OR_IDENTIFIERS or
                          previous_significant_token.token_value in keyword_type_value):
                     if was_const:
-                        self.validate_pascal_case(current_token)  # constants
+                        validate_pascal_case(current_token)  # constants
                         self.rename_all(current_token)
                     elif next_significant_token.token_value in ['(', '{']:
-                        self.validate_pascal_case(current_token)  # methods and properties
+                        validate_pascal_case(current_token)  # methods and properties
                         self.rename_all(current_token)
                     elif next_significant_token.token_value in [';', '=', ',', ')']:
                         self.validate_camel_case(current_token)  # object references
@@ -319,6 +320,11 @@ class StaticAnalyzer:
                     elif next_significant_token.token_value in [';', '=']:
                         self.validate_doc_type_comment(index, 'object reference', file)  # object references
             index += 1
+
+    def file_rename(self):
+        for file in self.files:
+            validate_pascal_case(Token(None, file.name, None))
+
 
     def analyze(self):
         for file in self.files:
