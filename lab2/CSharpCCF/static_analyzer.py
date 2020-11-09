@@ -26,7 +26,7 @@ keyword_type_value = ('int', 'short', 'bool', 'string', 'void', 'char', 'ulong',
 class File:
     def __init__(self, path):
         self.path = path
-        file = open(path, encoding="utf-8")
+        file = open(path, encoding="utf-8", errors='ignore')
         self.all_tokens = tokenize(file.read())
 
 
@@ -37,6 +37,8 @@ class StaticAnalyzer:
 
     # PascalCase
     def validate_pascal_case(self, token):
+        if token.correct_token_value.isupper():
+            token.correct_token_value = token.correct_token_value.casefold()
         index = 1
         while index < len(token.correct_token_value):
             if token.correct_token_value[index] == '_' and index + 1 < len(token.correct_token_value):
