@@ -8,7 +8,7 @@ from pathlib import Path
 from .lexer import TokenType, Token
 from .static_analyzer import StaticAnalyzer, File, validate_pascal_case
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 
 def get_files(path):
