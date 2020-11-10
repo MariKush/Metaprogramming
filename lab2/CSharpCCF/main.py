@@ -23,6 +23,7 @@ def write_result(all_tokens, file_name):
     new_file = open(file_name, "w", encoding='utf-8')
     for token in all_tokens:
         new_file.write(token.correct_token_value)
+    new_file.close()
 
 
 def verify(files):
@@ -70,7 +71,7 @@ def fix_names(path):
         os.rename(name, token.correct_token_value)
 
     if isfile(path) and len(path) > 2 and path[-3:] == '.cs':
-        if isabs(path):
+        if split(path)[1] != path:
             os.chdir(split(path)[0])
         name = split(path)[1]
         token = Token(None, name[:-3], None, None)

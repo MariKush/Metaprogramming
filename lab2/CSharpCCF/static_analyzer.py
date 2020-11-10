@@ -83,7 +83,7 @@ class StaticAnalyzer:
 
             if current_token.token_value == 'const':
                 was_const = True
-            elif current_token.token_value in ['{', ';', '}', '=']:
+            elif current_token.token_value in ['{', ';', '}']:
                 was_const = False
 
             if current_token.token_value == ']':
@@ -113,7 +113,7 @@ class StaticAnalyzer:
                     self.rename_all(current_token)
                 elif len(stack_influential_tokens) > 1 and stack_influential_tokens[-1].token_value == '{' and \
                         stack_influential_tokens[-2].token_value in ['class', 'interface'] and \
-                        (previous_significant_token.token_value in ['>', ']'] or
+                        (previous_significant_token.token_value in ['>', ']', ','] or
                          previous_significant_token.token_type == TokenType.NUMBER_OR_IDENTIFIERS or
                          previous_significant_token.token_value in keyword_type_value):
                     if was_const:
