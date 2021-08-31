@@ -1,0 +1,119 @@
+{
+  "tabs_and_indents": {
+    "use_tab_character": false,
+    "indent": 4,
+    "continuation_indent": 8,
+    "keep_indents_on_empty_lines": false,
+    "do_not_indent_top_level_class_members": false,
+    "label_indent": 0,
+    "absolute_label_indent": false
+  },
+  "spaces": {
+    "before_parentheses":{
+      "if": true,
+      "for": true,
+      "while": true,
+      "switch": true,
+      "try": true,
+      "catch": true,
+      "synchronized": true,
+      "method_declaration": false,
+      "method_call": false
+    },
+    "around_operators":{
+      "assignment": true,
+      "logical": true,
+      "equality": true,
+      "relational": true,
+      "bitwise": true,
+      "additive": true,
+      "multiplicative": true,
+      "shift": true,
+      "unary": false,
+      "lambda": true,
+      "method_reference": true
+    },
+    "before_left_brace": {
+      "class": true,
+      "method": true,
+      "if": true,
+      "else": true,
+      "for": true,
+      "while": true,
+      "do": true,
+      "switch": true,
+      "case": true,
+      "try": true,
+      "catch": true,
+      "finally": true,
+      "synchronized": true,
+      "array_initializer": false
+    },
+    "before_keyword": {
+      "else": true,
+      "while": true,
+      "catch": true,
+      "finally": true
+    },
+    "within": {
+      "if": false,
+      "for": false,
+      "while": false,
+      "switch": false,
+      "try": false,
+      "catch": false,
+      "synchronized": false,
+      "brackets": false,
+      "array_initializer_braces": false,
+      "empty_array_initializer_braces": false,
+      "method_declaration_parentheses": false,
+      "empty_method_declaration_parentheses": false,
+      "method_call_parentheses": false,
+      "empty_method_call_parentheses": false,
+      "type_cast_parentheses": false,
+      "annotation_parentheses": false,
+      "angle_brackets": false
+    },
+    "in_ternary_operator": {
+      "before_question_mark": true,
+      "after_question_mark": true,
+      "before_colon": true,
+      "after_colon": true
+    },
+    "other": {
+      "after_comma": true,
+      "before_comma": false,
+      "after_for_semicolon": true,
+      "before_for_semicolon": false,
+      "after_colon_in_foreach": true,
+      "before_colon_in_foreach": true,
+      "after_type_cast": true
+    }
+  },
+  "wrapping_and_braces": {
+    "braces_placement": {
+      "in_class_declaration": false,
+      "in_method_declaration": false,
+      "in_lambda_declaration": false,
+      "other": false
+    },
+    "indent_case_branches": true,
+    "each_case_on_separate_line": true
+  },
+  "blank_lines": {
+    "maximum": {
+      "in_declarations": 2,
+      "in_code": 2,
+      "between_header_and_package": 2
+    },
+    "minimum": {
+      "before_package_statement": 0,
+      "after_package_statement": 1,
+      "before_imports": 1,
+      "after_imports": 1,
+      "around_class": 1,
+      "after_class_header": 0,
+      "before_class_end": 0
+    }
+  }
+}
